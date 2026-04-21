@@ -32,19 +32,30 @@
     "players": "Spieler",
     "you": "du",
     "leaveSession": "Sitzung verlassen",
-    "startGame": "Spiel starten"
+    "startGame": "Spiel starten",
+    "startGameHint": "Mindestens 3 Spieler erforderlich",
+    "lobbyFull": "Lobby voll (10/10)",
+    "playerCount": "{count} / 10 Spieler"
+  },
+  "board": {
+    "mainframeLabel": "/ main",
+    "leaveGame": "Spiel verlassen",
+    "nodesConnected": "{count} Entwickler verbunden",
+    "thinkingAbout": "{name} denkt nach...",
+    "mainRepo": "Haupt-Repository",
+    "currentSprint": "Aktueller Sprint · Zusammengeführt",
+    "previousSprints": "Vorherige Sprints",
+    "roundLabel": "Runde {n}",
+    "noCommitsYet": "Noch keine Commits zusammengeführt…"
   },
   "modal": {
     "errorLabel": "Fehler:",
-    "gameStartingTitle": "Spiel startet!",
-    "youStarted": "Du hast das Spiel gestartet.",
-    "hostStarted": "Der Host hat das Spiel gestartet.",
-    "goodLuck": "Viel Erfolg!",
-    "backToLobby": "Zurück zur Lobby",
     "sessionEndedTitle": "Sitzung beendet",
-    "sessionEndedMsg": "Der Host hat diese Sitzung beendet."
+    "sessionEndedMsg": "Der Host hat diese Sitzung beendet.",
+    "backToLobby": "Zurück zur Lobby"
   },
   "errors": {
-    "uniqueRoomCode": "Konnte keinen eindeutigen Raumcode generieren. Bitte erneut versuchen."
+    "uniqueRoomCode": "Konnte keinen eindeutigen Raumcode generieren. Bitte erneut versuchen.",
+    "lobbyFull": "Diese Lobby ist voll (max. 10 Spieler)."
   }
 }

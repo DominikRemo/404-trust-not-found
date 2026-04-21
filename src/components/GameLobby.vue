@@ -11,7 +11,7 @@ import { useLocale } from '../composables/useLocale.js'
 
 const {
   peerId, localName, isHost, isReady,
-  players, error, gameStarted, sessionEnded,
+  players, error, sessionEnded,
   initHost, joinGame, changeName, startGame, leaveSession, reset,
 } = useNetwork()
 
@@ -59,43 +59,40 @@ function saveEdit() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-page flex flex-col items-center px-6 py-12 gap-10 transition-colors duration-200">
+  <div class="min-h-screen bg-page flex flex-col transition-colors duration-200">
 
-    <!-- Top-right controls: language + theme -->
-    <div class="fixed top-4 right-4 z-50 flex items-center gap-2">
-      <!-- Language toggle -->
-      <div class="w-10 h-10 rounded-xl bg-surface border border-border text-ink-dim shadow-sm hover:bg-raised transition-colors flex items-center justify-center relative">
-        <span class="text-xs font-bold uppercase pointer-events-none select-none">{{ locale }}</span>
-        <select
-          :value="locale"
-          @change="setLocale($event.target.value)"
-          class="absolute inset-0 opacity-0 cursor-pointer w-full"
-          aria-label="Language"
-        >
-          <option v-for="lang in SUPPORTED" :key="lang" :value="lang">{{ lang.toUpperCase() }}</option>
-        </select>
+    <!-- Header bar -->
+    <header class="flex items-center justify-between px-6 py-3 bg-surface border-b border-border shadow-sm">
+      <div class="flex items-center gap-3">
+        <span class="bg-blue-700 text-white text-xs font-bold tracking-widest px-2.5 py-1 rounded">404</span>
+        <h1 class="text-base font-semibold text-ink m-0">Trust Not Found</h1>
       </div>
+      <div class="flex items-center gap-2">
+        <!-- Language toggle -->
+        <div class="w-10 h-10 rounded-xl bg-surface border border-border text-ink-dim shadow-sm hover:bg-raised transition-colors flex items-center justify-center relative">
+          <span class="text-xs font-bold uppercase pointer-events-none select-none">{{ locale }}</span>
+          <select
+            :value="locale"
+            @change="setLocale($event.target.value)"
+            class="absolute inset-0 opacity-0 cursor-pointer w-full"
+            aria-label="Language"
+          >
+            <option v-for="lang in SUPPORTED" :key="lang" :value="lang">{{ lang.toUpperCase() }}</option>
+          </select>
+        </div>
 
-      <!-- Theme toggle -->
-      <button
-        @click="cycleTheme"
-        class="w-10 h-10 rounded-xl bg-surface border border-border text-ink-dim shadow-sm hover:bg-raised transition-colors flex items-center justify-center cursor-pointer"
-        :title="themeTitle"
-      >
-        <i :class="themeIcon" class="text-base" />
-      </button>
-    </div>
-
-    <!-- Header -->
-    <header class="flex flex-col items-center gap-3 text-center">
-      <span class="bg-blue-700 text-white text-xs font-bold tracking-widest px-3 py-1.5 rounded-md">
-        404
-      </span>
-      <h1 class="text-4xl font-bold tracking-tight text-ink m-0">Trust Not Found</h1>
-      <p class="text-ink-dim text-base max-w-sm m-0">
-        {{ t('header.subtitle') }}
-      </p>
+        <!-- Theme toggle -->
+        <button
+          @click="cycleTheme"
+          class="w-10 h-10 rounded-xl bg-surface border border-border text-ink-dim shadow-sm hover:bg-raised transition-colors flex items-center justify-center cursor-pointer"
+          :title="themeTitle"
+        >
+          <i :class="themeIcon" class="text-base" />
+        </button>
+      </div>
     </header>
+
+    <div class="flex flex-col items-center px-6 py-12 gap-10 flex-1">
 
     <!-- ── Pre-game ─────────────────────────────────────── -->
     <div v-if="!isReady" class="flex flex-col items-center gap-5 w-full max-w-2xl">
@@ -227,6 +224,9 @@ function saveEdit() {
           <span class="w-5 h-5 rounded-full bg-chip-bg text-chip-text text-xs font-bold flex items-center justify-center">
             {{ players.length }}
           </span>
+          <span class="text-xs text-ink-faint font-normal ml-auto">
+            {{ t('lobby.playerCount', { count: players.length }) }}
+          </span>
         </h3>
         <ul class="flex flex-col gap-2 m-0 p-0 list-none">
           <li
@@ -251,7 +251,23 @@ function saveEdit() {
       <!-- Action row -->
       <div class="flex items-center justify-between gap-3">
         <Button :label="t('lobby.leaveSession')" icon="pi pi-sign-out" severity="danger" outlined @click="leaveSession" />
-        <Button v-if="isHost" :label="t('lobby.startGame')" icon="pi pi-play" @click="startGame" />
+        <div v-if="isHost" class="flex flex-col items-end gap-1">
+          <span
+            v-if="players.length >= 10"
+            class="text-xs font-semibold text-danger-text bg-danger-surface border border-danger-border px-2.5 py-1 rounded-lg"
+          >
+            {{ t('lobby.lobbyFull') }}
+          </span>
+          <Button
+            :label="t('lobby.startGame')"
+            icon="pi pi-play"
+            :disabled="players.length < 3"
+            @click="startGame"
+          />
+          <span v-if="players.length < 3" class="text-xs text-ink-faint">
+            {{ t('lobby.startGameHint') }}
+          </span>
+        </div>
       </div>
     </div>
 
@@ -259,19 +275,6 @@ function saveEdit() {
     <div v-if="error" class="bg-danger-surface border border-danger-border text-danger-text rounded-xl px-4 py-3 text-sm max-w-lg w-full">
       <strong>{{ t('modal.errorLabel') }}</strong> {{ error }}
     </div>
-
-    <!-- Game started modal -->
-    <Dialog v-model:visible="gameStarted" modal :header="t('modal.gameStartingTitle')" :closable="false" class="w-96">
-      <div class="flex flex-col items-center gap-4 py-4 text-center">
-        <span class="text-5xl">🚀</span>
-        <p class="text-ink-dim text-sm m-0">
-          {{ isHost ? t('modal.youStarted') : t('modal.hostStarted') }} {{ t('modal.goodLuck') }}
-        </p>
-      </div>
-      <template #footer>
-        <Button :label="t('modal.backToLobby')" icon="pi pi-home" fluid @click="reset" />
-      </template>
-    </Dialog>
 
     <!-- Session ended modal -->
     <Dialog v-model:visible="sessionEnded" modal :header="t('modal.sessionEndedTitle')" :closable="false" class="w-96">
@@ -284,5 +287,6 @@ function saveEdit() {
       </template>
     </Dialog>
 
+    </div><!-- end inner content -->
   </div>
 </template>

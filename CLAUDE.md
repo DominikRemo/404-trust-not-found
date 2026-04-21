@@ -23,6 +23,7 @@ We are building a serverless, peer-to-peer social deduction game called "404: Tr
 - **Anti-Pattern:** Do NOT use the cliché "Matrix Hacker" aesthetic (no black backgrounds with neon-green monospace fonts). Keep it light and spacious with gentle drop shadows and rounded corners.
 
 ## Git Workflow
+Only commit code when you are explicitly asked to commit.
 Whenever you are asked to commit code, ALWAYS follow these rules:
 1. Stage all relevant changes.
 2. Write a clear, descriptive commit message.

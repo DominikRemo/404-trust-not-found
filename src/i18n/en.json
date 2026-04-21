@@ -32,19 +32,30 @@
     "players": "Players",
     "you": "you",
     "leaveSession": "Leave Session",
-    "startGame": "Start Game"
+    "startGame": "Start Game",
+    "startGameHint": "Need at least 3 players to start",
+    "lobbyFull": "Lobby Full (10/10)",
+    "playerCount": "{count} / 10 players"
+  },
+  "board": {
+    "mainframeLabel": "/ main",
+    "leaveGame": "Leave Game",
+    "nodesConnected": "{count} developers connected",
+    "thinkingAbout": "{name} is thinking...",
+    "mainRepo": "Main Repository",
+    "currentSprint": "Current Sprint · Merged Commits",
+    "previousSprints": "Previous Sprints",
+    "roundLabel": "Round {n}",
+    "noCommitsYet": "No commits merged yet…"
   },
   "modal": {
     "errorLabel": "Error:",
-    "gameStartingTitle": "Game is Starting!",
-    "youStarted": "You started the game.",
-    "hostStarted": "The host has started the game.",
-    "goodLuck": "Good luck!",
-    "backToLobby": "Back to Lobby",
     "sessionEndedTitle": "Session Ended",
-    "sessionEndedMsg": "The host has closed this session."
+    "sessionEndedMsg": "The host has closed this session.",
+    "backToLobby": "Back to Lobby"
   },
   "errors": {
-    "uniqueRoomCode": "Could not generate a unique room code. Please try again."
+    "uniqueRoomCode": "Could not generate a unique room code. Please try again.",
+    "lobbyFull": "This lobby is full (10 players max)."
   }
 }
