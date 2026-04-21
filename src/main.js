@@ -5,6 +5,7 @@ import Aura from '@primevue/themes/aura'
 import 'primeicons/primeicons.css'
 import './style.css'
 import App from './App.vue'
+import { i18n } from './i18n/index.js'
 
 const GameTheme = definePreset(Aura, {
   semantic: {
@@ -25,6 +26,7 @@ const GameTheme = definePreset(Aura, {
 })
 
 createApp(App)
+  .use(i18n)
   .use(PrimeVue, {
     theme: {
       preset: GameTheme,

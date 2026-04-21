@@ -1,0 +1,50 @@
+{
+  "header": {
+    "subtitle": "A social deduction game of trust, deception, and survival."
+  },
+  "theme": {
+    "system": "System theme",
+    "light": "Light mode",
+    "dark": "Dark mode"
+  },
+  "pregame": {
+    "yourName": "Your Name",
+    "namePlaceholder": "Enter your name…",
+    "hostTitle": "Host a Game",
+    "hostDesc": "Create a new room and share the code with your friends.",
+    "hostBtn": "⚡ Host Game",
+    "joinTitle": "Join a Game",
+    "joinDesc": "Enter the room code from your host to connect.",
+    "joinPlaceholder": "ABC123",
+    "joinBtn": "🔗 Join"
+  },
+  "lobby": {
+    "statusHosting": "Hosting · Waiting for players",
+    "statusConnected": "Connected to game",
+    "roomCode": "Room Code",
+    "copied": "Copied!",
+    "copy": "Copy",
+    "shareHint": "Share this code with players who want to join.",
+    "yourName": "Your Name",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "players": "Players",
+    "you": "you",
+    "leaveSession": "Leave Session",
+    "startGame": "Start Game"
+  },
+  "modal": {
+    "errorLabel": "Error:",
+    "gameStartingTitle": "Game is Starting!",
+    "youStarted": "You started the game.",
+    "hostStarted": "The host has started the game.",
+    "goodLuck": "Good luck!",
+    "backToLobby": "Back to Lobby",
+    "sessionEndedTitle": "Session Ended",
+    "sessionEndedMsg": "The host has closed this session."
+  },
+  "errors": {
+    "uniqueRoomCode": "Could not generate a unique room code. Please try again."
+  }
+}

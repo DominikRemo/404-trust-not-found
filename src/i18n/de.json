@@ -1,0 +1,50 @@
+{
+  "header": {
+    "subtitle": "Ein soziales Deduktionsspiel über Vertrauen, Täuschung und Überleben."
+  },
+  "theme": {
+    "system": "Systemdesign",
+    "light": "Heller Modus",
+    "dark": "Dunkler Modus"
+  },
+  "pregame": {
+    "yourName": "Dein Name",
+    "namePlaceholder": "Name eingeben…",
+    "hostTitle": "Spiel hosten",
+    "hostDesc": "Erstelle einen Raum und teile den Code mit deinen Freunden.",
+    "hostBtn": "⚡ Spiel hosten",
+    "joinTitle": "Spiel beitreten",
+    "joinDesc": "Gib den Raumcode des Hosts ein, um beizutreten.",
+    "joinPlaceholder": "ABC123",
+    "joinBtn": "🔗 Beitreten"
+  },
+  "lobby": {
+    "statusHosting": "Hosting · Warte auf Spieler",
+    "statusConnected": "Mit Spiel verbunden",
+    "roomCode": "Raumcode",
+    "copied": "Kopiert!",
+    "copy": "Kopieren",
+    "shareHint": "Teile diesen Code mit Spielern, die beitreten möchten.",
+    "yourName": "Dein Name",
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "players": "Spieler",
+    "you": "du",
+    "leaveSession": "Sitzung verlassen",
+    "startGame": "Spiel starten"
+  },
+  "modal": {
+    "errorLabel": "Fehler:",
+    "gameStartingTitle": "Spiel startet!",
+    "youStarted": "Du hast das Spiel gestartet.",
+    "hostStarted": "Der Host hat das Spiel gestartet.",
+    "goodLuck": "Viel Erfolg!",
+    "backToLobby": "Zurück zur Lobby",
+    "sessionEndedTitle": "Sitzung beendet",
+    "sessionEndedMsg": "Der Host hat diese Sitzung beendet."
+  },
+  "errors": {
+    "uniqueRoomCode": "Konnte keinen eindeutigen Raumcode generieren. Bitte erneut versuchen."
+  }
+}

@@ -1,5 +1,6 @@
 import { ref, markRaw } from 'vue'
 import Peer from 'peerjs'
+import { i18n } from '../i18n/index.js'
 
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 
@@ -72,7 +73,7 @@ export function useNetwork() {
 
   function tryInitHost(code, attempt = 0) {
     if (attempt > 5) {
-      error.value = 'Could not generate a unique room code. Please try again.'
+      error.value = i18n.global.t('errors.uniqueRoomCode')
       isHost.value = false
       return
     }
