@@ -9,6 +9,10 @@ function generateCode(len = 6) {
   ).join('')
 }
 
+function sanitizeName(name) {
+  return typeof name === 'string' ? name.trim().slice(0, 24) || 'Unknown' : 'Unknown'
+}
+
 export function useNetwork() {
   const peer = ref(null)
   const peerId = ref('')
@@ -48,10 +52,10 @@ export function useNetwork() {
 
     conn.on('data', msg => {
       if (msg?.type === 'HELLO') {
-        nameRegistry[remotePeer] = msg.name
+        nameRegistry[remotePeer] = sanitizeName(msg.name)
         broadcastPlayerList()
       } else if (msg?.type === 'NAME_CHANGE') {
-        nameRegistry[remotePeer] = msg.name
+        nameRegistry[remotePeer] = sanitizeName(msg.name)
         broadcastPlayerList()
       }
     })
