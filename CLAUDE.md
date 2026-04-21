@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-We are building a serverless, peer-to-peer social deduction game called "404: Trust Not Found" (inspired by games like "Tempel des Schreckens").
+We are building a serverless, peer-to-peer social deduction game called "404: Trust Not Found".
 
 ## Tech Stack & Architecture
 - **Build Tool:** Vite
@@ -17,7 +17,7 @@ We are building a serverless, peer-to-peer social deduction game called "404: Tr
 - `assets/`: Static assets and global CSS (`style.css`).
 
 ## UI / UX Design Guidelines
-- **Theme:** Modern, clean, professional "Hacker School" corporate identity. 
+- **Theme:** Modern, clean, professional "Hacker" corporate identity. 
 - **Colors:** White/off-white backgrounds, dark grey/charcoal for text to ensure high readability. Use dark corporate blue for primary actions/buttons.
 - **Typography:** Clean, modern Sans-Serif fonts (e.g., system-ui, Inter, Roboto).
 - **Anti-Pattern:** Do NOT use the cliché "Matrix Hacker" aesthetic (no black backgrounds with neon-green monospace fonts). Keep it light and spacious with gentle drop shadows and rounded corners.
