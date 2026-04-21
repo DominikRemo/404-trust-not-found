@@ -1,7 +1,7 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import GameLobby from './components/GameLobby.vue'
 </script>
 
 <template>
-  <HelloWorld />
+  <GameLobby />
 </template>
