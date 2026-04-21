@@ -93,7 +93,7 @@ function saveEdit() {
         class="w-full bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden transition-opacity duration-200"
         :class="hasName ? 'opacity-100' : 'opacity-50 pointer-events-none select-none'"
       >
-        <div class="flex items-stretch">
+        <div class="flex flex-col sm:flex-row items-stretch">
           <!-- Host -->
           <div class="flex-1 px-8 py-7 flex flex-col gap-3">
             <div class="flex items-center gap-3">
@@ -108,7 +108,8 @@ function saveEdit() {
             <Button label="⚡ Host Game" class="mt-auto self-start" @click="handleHost" />
           </div>
 
-          <Divider layout="vertical" class="!mx-0" />
+          <div class="sm:hidden"><Divider layout="horizontal" class="!my-0" /></div>
+          <div class="hidden sm:flex"><Divider layout="vertical" class="!mx-0" /></div>
 
           <!-- Join -->
           <div class="flex-1 px-8 py-7 flex flex-col gap-3">
