@@ -28,7 +28,7 @@ createApp(App)
   .use(PrimeVue, {
     theme: {
       preset: GameTheme,
-      options: { darkModeSelector: false },
+      options: { darkModeSelector: '.dark' },
     },
   })
   .mount('#app')

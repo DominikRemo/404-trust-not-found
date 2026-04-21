@@ -1,10 +1,89 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
+/* ── Semantic design tokens ─────────────────────────────────────────────
+   Define colors once here. Components reference these token classes and
+   get both light and dark mode for free.
+   ──────────────────────────────────────────────────────────────────── */
 :root {
   --font-sans: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --font-mono: ui-monospace, 'Cascadia Code', Consolas, monospace;
+
+  /* Backgrounds */
+  --page-bg:      #f8fafc; /* slate-50  — page canvas */
+  --surface-bg:   #ffffff; /* white     — cards / panels */
+  --raised-bg:    #f8fafc; /* slate-50  — items inside cards */
+
+  /* Borders */
+  --border:       #e2e8f0; /* slate-200 */
+  --border-sub:   #f1f5f9; /* slate-100 */
+
+  /* Text */
+  --ink:          #0f172a; /* slate-900 — primary */
+  --ink-sub:      #1e293b; /* slate-800 — secondary */
+  --ink-dim:      #64748b; /* slate-500 — muted body */
+  --ink-faint:    #94a3b8; /* slate-400 — labels / captions */
+
+  /* Neutral badge (step numbers, etc.) */
+  --muted-bg:     #e2e8f0; /* slate-200 */
+  --muted-text:   #64748b; /* slate-500 */
+
+  /* Blue accent (player avatar, "you" badge, count pill) */
+  --chip-bg:      #eff6ff; /* blue-50 */
+  --chip-text:    #1d4ed8; /* blue-700 */
+
+  /* Error / danger */
+  --danger-surface: #fef2f2; /* red-50 */
+  --danger-border:  #fecaca; /* red-200 */
+  --danger-text:    #dc2626; /* red-600 */
 }
 
+.dark {
+  --page-bg:      #0f172a; /* slate-900 */
+  --surface-bg:   #1e293b; /* slate-800 */
+  --raised-bg:    #334155; /* slate-700 */
+
+  --border:       #334155; /* slate-700 */
+  --border-sub:   #475569; /* slate-600 */
+
+  --ink:          #f1f5f9; /* slate-100 */
+  --ink-sub:      #e2e8f0; /* slate-200 */
+  --ink-dim:      #94a3b8; /* slate-400 */
+  --ink-faint:    #64748b; /* slate-500 */
+
+  --muted-bg:     #475569; /* slate-600 */
+  --muted-text:   #94a3b8; /* slate-400 */
+
+  --chip-bg:      rgba(59, 130, 246, 0.15);
+  --chip-text:    #93c5fd; /* blue-300 */
+
+  --danger-surface: rgba(127, 29, 29, 0.2);
+  --danger-border:  #991b1b; /* red-800 */
+  --danger-text:    #f87171; /* red-400 */
+}
+
+/* Register tokens as Tailwind utility classes via @theme inline.
+   Tailwind emits var(--color-*) so the CSS variables above drive the value. */
+@theme inline {
+  --color-page:           var(--page-bg);
+  --color-surface:        var(--surface-bg);
+  --color-raised:         var(--raised-bg);
+  --color-border:         var(--border);
+  --color-border-sub:     var(--border-sub);
+  --color-ink:            var(--ink);
+  --color-ink-sub:        var(--ink-sub);
+  --color-ink-dim:        var(--ink-dim);
+  --color-ink-faint:      var(--ink-faint);
+  --color-muted-bg:       var(--muted-bg);
+  --color-muted-text:     var(--muted-text);
+  --color-chip-bg:        var(--chip-bg);
+  --color-chip-text:      var(--chip-text);
+  --color-danger-surface: var(--danger-surface);
+  --color-danger-border:  var(--danger-border);
+  --color-danger-text:    var(--danger-text);
+}
+
+/* ── Base ──────────────────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -14,7 +93,7 @@
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background-color: #f8fafc;
+  background-color: var(--page-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
