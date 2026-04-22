@@ -83,6 +83,29 @@
   --color-danger-text:    var(--danger-text);
 }
 
+/* ── Shared card utilities (used across GameBoard sub-components) ─── */
+
+/* Card glow — applied when a player is hovering a card */
+.card-glow-blue   { box-shadow: 0 0 15px rgba(59, 130, 246, 0.8) !important; }
+.card-glow-yellow { box-shadow: 0 0 15px rgba(250, 204, 21, 0.6) !important; }
+
+/* Card color tints — used in hub merged-cards and local hand face-up view */
+.merged-card-commit {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid rgba(74, 222, 128, 0.45);
+  color: #166534;
+}
+.merged-card-error {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 1px solid rgba(252, 165, 165, 0.55);
+  color: #991b1b;
+}
+.merged-card-panic {
+  background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%);
+  border: 1px solid rgba(240, 171, 252, 0.55);
+  color: #86198f;
+}
+
 /* ── Base ──────────────────────────────────────────────────────────── */
 *,
 *::before,

@@ -1,6 +1,10 @@
 import { ref, computed, markRaw } from 'vue'
 import Peer from 'peerjs'
 import { i18n } from '../i18n/index.js'
+import { useGameEngine } from './useGameEngine.js'
+
+// Engine singleton — same instance everywhere
+const _engine = useGameEngine()
 
 const MIN_PLAYERS = 3
 const MAX_PLAYERS = 10
@@ -18,6 +22,7 @@ const hostConn = ref(null)
 const error = ref('')
 const gameStarted = ref(false)
 const sessionEnded = ref(false)
+const playAgainReadyIds = ref([])  // peer IDs ready for the next game
 
 const cardHoverStates = ref([])
 
@@ -51,6 +56,27 @@ function broadcastPlayerList() {
   openConns.value.forEach(c => c.send(msg))
 }
 
+// ── Game state broadcast — each client gets only their own hand unmasked ─────
+function broadcastGameState() {
+  openConns.value.forEach(c =>
+    c.send({ type: 'GAME_STATE_UPDATE', state: _engine.serializeStateFor(c.peer) })
+  )
+}
+
+// ── Play-again readiness broadcast ───────────────────────────────────────────
+function broadcastPlayAgainState() {
+  const msg = { type: 'PLAY_AGAIN_STATE', readyIds: playAgainReadyIds.value }
+  openConns.value.forEach(c => c.send(msg))
+}
+
+// ── Trigger a new game without disconnecting anyone ───────────────────────────
+function _triggerPlayAgain() {
+  playAgainReadyIds.value = []
+  _engine.setupGame(players.value)
+  // GAME_STATE_UPDATE keeps gameStarted=true on clients; no lobby trip needed
+  broadcastGameState()
+}
+
 // ── Card hover helpers ────────────────────────────────────────────────────────
 function broadcastCardHoverUpdate() {
   const states = Object.entries(cardHoverRegistry).map(([id, val]) => ({ id, ...val }))
@@ -80,6 +106,28 @@ function registerConn(conn) {
     } else if (msg?.type === 'CARD_LEAVE') {
       delete cardHoverRegistry[remotePeer]
       broadcastCardHoverUpdate()
+    } else if (msg?.type === 'PLAYER_ACTION') {
+      const { action } = msg
+      if (action?.type === 'MERGE_PR' && remotePeer === _engine.activeReviewer.value) {
+        _engine.mergePR(action.targetId, action.cardIndex)
+        broadcastGameState()
+      } else if (action?.type === 'PLAYER_READY') {
+        _engine.markReady(remotePeer)
+        broadcastGameState()
+      } else if (action?.type === 'PLAY_AGAIN_READY') {
+        if (!playAgainReadyIds.value.includes(remotePeer)) {
+          playAgainReadyIds.value = [...playAgainReadyIds.value, remotePeer]
+        }
+        broadcastPlayAgainState()
+        // Check if all connected players (host + clients) are ready
+        const allPlayerIds = players.value.map(p => p.id)
+        const allReady = allPlayerIds.every(id =>
+          id === peerId.value
+            ? playAgainReadyIds.value.includes(peerId.value)
+            : playAgainReadyIds.value.includes(id)
+        )
+        if (allReady) _triggerPlayAgain()
+      }
     }
   })
 
@@ -171,7 +219,10 @@ export function useNetwork() {
         if (msg?.type === 'PLAYER_LIST') {
           players.value = msg.players
         } else if (msg?.type === 'GAME_STARTED') {
+          if (msg.state) _engine.applyState(msg.state)
           gameStarted.value = true
+        } else if (msg?.type === 'GAME_STATE_UPDATE') {
+          _engine.applyState(msg.state)
         } else if (msg?.type === 'SESSION_CLOSED') {
           sessionEnded.value = true
         } else if (msg?.type === 'LOBBY_FULL') {
@@ -180,6 +231,8 @@ export function useNetwork() {
           isReady.value = false
         } else if (msg?.type === 'CARD_HOVER_BROADCAST') {
           cardHoverStates.value = msg.states
+        } else if (msg?.type === 'PLAY_AGAIN_STATE') {
+          playAgainReadyIds.value = msg.readyIds
         }
       })
 
@@ -210,8 +263,35 @@ export function useNetwork() {
 
   function startGame() {
     if (!isHost.value || players.value.length < MIN_PLAYERS) return
-    openConns.value.forEach(c => c.send({ type: 'GAME_STARTED' }))
+    playAgainReadyIds.value = []
+    _engine.setupGame(players.value)
+    // Send each client only their own unmasked hand
+    openConns.value.forEach(c =>
+      c.send({ type: 'GAME_STARTED', state: _engine.serializeStateFor(c.peer) })
+    )
     gameStarted.value = true
+  }
+
+  function dispatchAction(action) {
+    if (isHost.value) {
+      if (action.type === 'MERGE_PR') {
+        _engine.mergePR(action.targetId, action.cardIndex)
+        broadcastGameState()
+      } else if (action.type === 'PLAYER_READY') {
+        _engine.markReady(peerId.value)
+        broadcastGameState()
+      } else if (action.type === 'PLAY_AGAIN_READY') {
+        if (!playAgainReadyIds.value.includes(peerId.value)) {
+          playAgainReadyIds.value = [...playAgainReadyIds.value, peerId.value]
+        }
+        broadcastPlayAgainState()
+        const allPlayerIds = players.value.map(p => p.id)
+        const allReady = allPlayerIds.every(id => playAgainReadyIds.value.includes(id))
+        if (allReady) _triggerPlayAgain()
+      }
+    } else if (hostConn.value?.open) {
+      hostConn.value.send({ type: 'PLAYER_ACTION', action })
+    }
   }
 
   function sendCardHover(cardId) {
@@ -230,6 +310,12 @@ export function useNetwork() {
     } else if (hostConn.value?.open) {
       hostConn.value.send({ type: 'CARD_LEAVE' })
     }
+  }
+
+  // Host-only: start next game with whoever is currently connected
+  function forceStartNextGame() {
+    if (!isHost.value) return
+    _triggerPlayAgain()
   }
 
   function leaveSession() {
@@ -254,8 +340,10 @@ export function useNetwork() {
     gameStarted.value = false
     sessionEnded.value = false
     cardHoverStates.value = []
+    playAgainReadyIds.value = []
     Object.keys(nameRegistry).forEach(k => delete nameRegistry[k])
     Object.keys(cardHoverRegistry).forEach(k => delete cardHoverRegistry[k])
+    _engine.resetGame()
   }
 
   return {
@@ -268,6 +356,7 @@ export function useNetwork() {
     gameStarted,
     sessionEnded,
     cardHoverStates,
+    playAgainReadyIds,
     hostPeerId,
     initHost,
     joinGame,
@@ -275,7 +364,9 @@ export function useNetwork() {
     startGame,
     sendCardHover,
     sendClearHover,
+    forceStartNextGame,
     leaveSession,
     reset,
+    dispatchAction,
   }
 }
