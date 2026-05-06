@@ -9,6 +9,7 @@ import { useLocale } from '../composables/useLocale.js'
 import MainRepository from './MainRepository.vue'
 import PlayerNode from './PlayerNode.vue'
 import LocalHand from './LocalHand.vue'
+import GameInfoCard from './GameInfoCard.vue'
 
 const {
   players, peerId, isHost,
@@ -150,6 +151,15 @@ function onReadyForNextGame() {
       <p class="absolute top-4 left-6 text-xs font-semibold uppercase tracking-widest text-ink-faint m-0 pointer-events-none" style="z-index:30">
         {{ t('board.nodesConnected', { count: players.length }) }}
       </p>
+
+      <!-- ── Game info card (top-right) ────────────────────────────────────── -->
+      <div
+        v-if="gameState === 'playing' || gameState === 'viewing'"
+        class="absolute top-4 right-4 pointer-events-none"
+        style="z-index:30"
+      >
+        <GameInfoCard />
+      </div>
 
       <!-- ── Turn status banner ─────────────────────────────────────────── -->
       <div class="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-none" style="z-index:30">
