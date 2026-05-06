@@ -120,6 +120,18 @@ function onReadyForNextGame() {
         >
           <i :class="themeIcon" class="text-base" />
         </button>
+
+        <!-- GitHub link -->
+        <a
+          href="https://github.com/DominikRemo/404-trust-not-found"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="w-10 h-10 rounded-xl bg-surface border border-border text-ink-dim shadow-sm hover:bg-raised transition-colors flex items-center justify-center"
+          :title="t('header.githubTitle')"
+        >
+          <i class="pi pi-github text-base" />
+        </a>
+
         <Button
           :label="t('board.leaveGame')"
           icon="pi pi-sign-out"
