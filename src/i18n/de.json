@@ -73,6 +73,13 @@
       "forceStart": "Mit aktuellen Devs starten"
     }
   },
+  "infoCard": {
+    "title": "Spielstatus",
+    "badDevs": "Bad Devs",
+    "possible": "möglich",
+    "featuresMerged": "Features gemergt",
+    "bugsMerged": "Bugs gemergt"
+  },
   "modal": {
     "errorLabel": "Fehler:",
     "sessionEndedTitle": "Sitzung beendet",

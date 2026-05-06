@@ -73,6 +73,13 @@
       "forceStart": "Start with Current Players"
     }
   },
+  "infoCard": {
+    "title": "Game Status",
+    "badDevs": "Bad Devs",
+    "possible": "possible",
+    "featuresMerged": "Features merged",
+    "bugsMerged": "Bugs merged"
+  },
   "modal": {
     "errorLabel": "Error:",
     "sessionEndedTitle": "Session Ended",

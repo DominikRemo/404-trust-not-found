@@ -1,4 +1,4 @@
-import { ref, readonly } from 'vue'
+import { ref, readonly, computed } from 'vue'
 
 // ── Fisher-Yates shuffle ──────────────────────────────────────────────────────
 function shuffle(arr) {
@@ -254,6 +254,24 @@ export function useGameEngine() {
     readyPlayers.value   = []
   }
 
+  // ── Derived public info ───────────────────────────────────────────────────────
+  // Min/max bad devs possible given player count — safe to show without
+  // revealing the actual assignment (pool may have spare cards that are discarded).
+  const badDevRange = computed(() => {
+    const n = players.value.length
+    const rp = ROLE_POOLS[n]
+    if (!rp) return null
+    const poolSize = rp.goodDev + rp.badDev
+    const discarded = poolSize - n
+    return {
+      min: Math.max(0, rp.badDev - discarded),
+      max: Math.min(n, rp.badDev),
+    }
+  })
+
+  const mergedFeatures = computed(() => mainRepo.value.filter(c => c.type === 'feature').length)
+  const mergedBugs     = computed(() => mainRepo.value.filter(c => c.type === 'bug').length)
+
   return {
     // Reactive state (read-only outside this composable)
     players:        readonly(players),
@@ -267,6 +285,9 @@ export function useGameEngine() {
     totalFeatures:  readonly(totalFeatures),
     totalBugs:      readonly(totalBugs),
     readyPlayers:   readonly(readyPlayers),
+    badDevRange,
+    mergedFeatures,
+    mergedBugs,
     // Actions
     setupGame,
     markReady,
