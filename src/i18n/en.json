@@ -42,7 +42,6 @@
     "mainframeLabel": "/ main",
     "leaveGame": "Leave Game",
     "nodesConnected": "{count} devs connected",
-    "thinkingAbout": "{name} is thinking...",
     "mainRepo": "Main Repository",
     "currentSprint": "Current Sprint · Merged PRs",
     "previousSprints": "Previous Sprints",
@@ -68,9 +67,7 @@
       "descProductionDown": "Too many bug PRs were merged into the main repo.",
       "roleReveal": "Role reveal",
       "backToLobby": "Back to Lobby",
-      "readyForNextGame": "Ready for Next Game",
-      "playAgainReadyCount": "{ready} / {total} ready for next game",
-      "forceStart": "Start with Current Players",
+      "startNewGame": "Start New Game",
       "lastRevealedCard": "Last revealed card"
     }
   },
