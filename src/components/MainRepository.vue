@@ -34,8 +34,8 @@ function cardTypeClass(type) {
   return { feature: 'merged-card-commit', bug: 'merged-card-error', chore: 'merged-card-panic' }[type] ?? 'merged-card-commit'
 }
 
-function cardTypeLabel(type) {
-  return { feature: 'FEATURE', bug: 'BUG', chore: 'CHORE' }[type] ?? type.toUpperCase()
+function cardImage(type) {
+  return `${import.meta.env.BASE_URL}cards/${type}.png`
 }
 </script>
 
@@ -69,10 +69,14 @@ function cardTypeLabel(type) {
         <div
           v-for="card in currentSprintCards"
           :key="card.id"
-          class="merged-card"
+          class="merged-card relative overflow-hidden"
           :class="cardTypeClass(card.type)"
         >
-          <div class="card-type-tag">{{ cardTypeLabel(card.type) }}</div>
+          <img
+            :src="cardImage(card.type)"
+            :alt="card.type"
+            class="absolute inset-0 w-full h-full object-cover"
+          />
         </div>
       </TransitionGroup>
     </div>
@@ -124,24 +128,12 @@ function cardTypeLabel(type) {
 }
 
 .merged-card {
-  width: 48px;
-  height: 64px;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 2px;
+  width: clamp(48px, 6vmin, 80px);
+  aspect-ratio: 3 / 4;
+  border-radius: 6px;
+  overflow: hidden;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
   flex-shrink: 0;
-}
-
-.card-type-tag {
-  font-size: 7px;
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-family: var(--font-mono);
 }
 
 .history-chip {

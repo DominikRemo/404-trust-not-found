@@ -31,6 +31,7 @@ const lastMergedCard = computed(() =>
 const { theme, cycleTheme } = useTheme()
 const { locale, setLocale, SUPPORTED } = useLocale()
 const { t } = useI18n()
+const baseUrl = import.meta.env.BASE_URL
 
 const themeIcon  = computed(() => ({ system: 'pi pi-desktop', light: 'pi pi-sun', dark: 'pi pi-moon' }[theme.value]))
 const themeTitle = computed(() => ({ system: t('theme.system'), light: t('theme.light'), dark: t('theme.dark') }[theme.value]))
@@ -188,20 +189,17 @@ const myRole = computed(() => roles.value[peerId.value])
         </div>
       </div>
 
-      <!-- ── Role badge ─────────────────────────────────────────────────── -->
+      <!-- ── Role card ──────────────────────────────────────────────────── -->
       <div
         v-if="myRole"
-        class="absolute bottom-4 right-6 pointer-events-none"
-        style="z-index:30"
+        class="absolute bottom-4 right-6 pointer-events-none rounded-lg overflow-hidden shadow-lg"
+        style="z-index:30; width: clamp(120px, 16vmin, 200px); aspect-ratio: 3 / 4;"
       >
-        <div
-          class="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border"
-          :class="myRole === 'goodDev'
-            ? 'bg-green-50 border-green-300 text-green-700'
-            : 'bg-red-50 border-red-300 text-red-700'"
-        >
-          {{ myRole === 'goodDev' ? t('board.roleGoodDev') : t('board.roleBadDev') }}
-        </div>
+        <img
+          :src="`${baseUrl}cards/${myRole}.png`"
+          :alt="myRole === 'goodDev' ? t('board.roleGoodDev') : t('board.roleBadDev')"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
       </div>
 
       <!-- ── Game over overlay ──────────────────────────────────────────── -->
@@ -219,14 +217,14 @@ const myRole = computed(() => roles.value[peerId.value])
               {{ t('board.gameOver.lastRevealedCard') }}
             </div>
             <div
-              class="px-5 py-2 rounded-lg font-black text-xs uppercase tracking-widest"
-              :class="{
-                'bg-green-100 text-green-800 border border-green-300': lastMergedCard.type === 'feature',
-                'bg-red-100 text-red-800 border border-red-300': lastMergedCard.type === 'bug',
-                'bg-slate-100 text-slate-700 border border-slate-300': lastMergedCard.type === 'chore',
-              }"
+              class="relative overflow-hidden rounded-lg shadow-md"
+              style="width: clamp(112px, 18vmin, 160px); aspect-ratio: 3 / 4;"
             >
-              {{ lastMergedCard.type.toUpperCase() }}
+              <img
+                :src="`${baseUrl}cards/${lastMergedCard.type}.png`"
+                :alt="lastMergedCard.type"
+                class="absolute inset-0 w-full h-full object-cover"
+              />
             </div>
           </div>
 

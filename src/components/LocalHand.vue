@@ -24,13 +24,8 @@ function onPutDownCards() {
   dispatchAction({ type: 'PLAYER_READY' })
 }
 
-// ── Card type helpers ─────────────────────────────────────────────────────────
-function cardTypeClass(type) {
-  return { feature: 'merged-card-commit', bug: 'merged-card-error', chore: 'merged-card-panic' }[type] ?? ''
-}
-
-function cardTypeLabel(type) {
-  return { feature: 'FEATURE', bug: 'BUG', chore: 'CHORE' }[type] ?? type.toUpperCase()
+function cardImage(type) {
+  return `${import.meta.env.BASE_URL}cards/${type}.png`
 }
 
 // ── Shuffle animation — fires when host transitions viewing → playing ──────────
@@ -63,21 +58,19 @@ watch(gameState, (newVal, oldVal) => {
           '--card-index': i,
         }"
       >
-        <div
-          class="local-card relative rounded-xl shadow-xl flex flex-col items-center justify-center gap-1"
-          :class="cardsAreVisible ? cardTypeClass(card.type) : ''"
-        >
-          <!-- Face-up: type label during viewing window -->
-          <span
+        <div class="local-card relative rounded-lg shadow-xl overflow-hidden">
+          <img
             v-if="cardsAreVisible"
-            class="text-[9px] font-black uppercase tracking-wider leading-none opacity-80 relative z-10"
-          >{{ cardTypeLabel(card.type) }}</span>
-
-          <!-- Watermark -->
-          <span
-            class="card-watermark-lg absolute inset-0 flex items-center justify-center font-black font-mono select-none pointer-events-none"
-            :class="cardsAreVisible ? 'opacity-10' : 'opacity-40'"
-          >404</span>
+            :src="cardImage(card.type)"
+            :alt="card.type"
+            class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          />
+          <img
+            v-else
+            :src="cardImage('back')"
+            alt="card back"
+            class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          />
         </div>
       </div>
     </TransitionGroup>
@@ -124,38 +117,13 @@ watch(gameState, (newVal, oldVal) => {
 <style scoped>
 /* ── Local player cards ───────────────────────────────────────────────────── */
 .local-card {
-  width: 76px;
-  height: 110px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border: 1.5px solid rgba(148, 163, 184, 0.45);
+  width: clamp(88px, 11vmin, 140px);
+  aspect-ratio: 3 / 4;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  overflow: visible;
-}
-
-.local-card.merged-card-commit {
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-  border-color: rgba(74, 222, 128, 0.5);
-}
-
-.local-card.merged-card-error {
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-  border-color: rgba(252, 165, 165, 0.6);
-}
-
-.local-card.merged-card-panic {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border-color: rgba(148, 163, 184, 0.6);
 }
 
 .local-card:hover {
   transform: translateY(-10px);
-}
-
-/* ── Watermark ────────────────────────────────────────────────────────────── */
-.card-watermark-lg {
-  font-size: 22px;
-  color: rgba(148, 163, 184, 0.4);
-  user-select: none;
 }
 
 /* ── Deal animation (staggered card-in at sprint start) ──────────────────── */
