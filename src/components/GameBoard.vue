@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Button from 'primevue/button'
 import { useNetwork } from '../composables/useNetwork.js'
@@ -13,9 +13,15 @@ import GameInfoCard from './GameInfoCard.vue'
 
 const {
   players, peerId, isHost,
-  leaveSession, dispatchAction,
-  playAgainReadyIds, forceStartNextGame,
+  leaveSession, startNewGame,
 } = useNetwork()
+
+const copied = ref(false)
+async function copyCode() {
+  await navigator.clipboard.writeText(peerId.value)
+  copied.value = true
+  setTimeout(() => (copied.value = false), 2000)
+}
 
 const { activeReviewer, gameState, roles, readyPlayers, mainRepo } = useGameEngine()
 
@@ -86,14 +92,6 @@ const isGameOver = computed(() =>
 )
 const myRole = computed(() => roles.value[peerId.value])
 
-// ── Play-again state ───────────────────────────────────────────────────────────
-const localReadyForNextGame = computed(() =>
-  playAgainReadyIds.value.includes(peerId.value)
-)
-
-function onReadyForNextGame() {
-  dispatchAction({ type: 'PLAY_AGAIN_READY' })
-}
 </script>
 
 <template>
@@ -299,41 +297,31 @@ function onReadyForNextGame() {
             </div>
           </div>
 
-          <!-- Play-again readiness list -->
-          <div class="w-full">
-            <div class="text-[10px] font-bold uppercase tracking-widest text-ink-faint mb-3">
-              {{ t('board.gameOver.playAgainReadyCount', { ready: playAgainReadyIds.length, total: players.length }) }}
+          <!-- Host: room code so dropped/new players can rejoin between games -->
+          <div v-if="isHost" class="w-full flex flex-col gap-2">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-ink-faint">{{ t('lobby.roomCode') }}</span>
+            <div class="flex items-center gap-3">
+              <code class="flex-1 font-mono text-xl font-semibold tracking-[0.25em] bg-raised border border-border rounded-lg px-4 py-2 text-ink">
+                {{ peerId }}
+              </code>
+              <Button
+                :label="copied ? t('lobby.copied') : t('lobby.copy')"
+                :icon="copied ? 'pi pi-check' : 'pi pi-copy'"
+                severity="secondary"
+                size="small"
+                @click="copyCode"
+              />
             </div>
-            <div class="flex flex-col gap-1.5">
-              <div
-                v-for="player in players"
-                :key="`ready-${player.id}`"
-                class="flex items-center justify-between px-3 py-1.5 rounded-lg border border-border bg-raised"
-              >
-                <span class="text-sm text-ink">{{ player.name }}</span>
-                <span
-                  v-if="playAgainReadyIds.includes(player.id)"
-                  class="text-[10px] font-bold uppercase tracking-wider text-green-700"
-                >ready</span>
-                <span v-else class="text-[10px] uppercase tracking-wider text-ink-faint">waiting</span>
-              </div>
-            </div>
+            <p class="text-xs text-ink-faint m-0">{{ t('lobby.shareHint') }}</p>
           </div>
 
           <!-- Action buttons -->
           <div class="flex flex-col gap-2 w-full">
             <Button
-              v-if="!localReadyForNextGame"
-              :label="t('board.gameOver.readyForNextGame')"
-              icon="pi pi-refresh"
-              @click="onReadyForNextGame"
-            />
-            <Button
               v-if="isHost"
-              :label="t('board.gameOver.forceStart')"
-              severity="secondary"
-              size="small"
-              @click="forceStartNextGame"
+              :label="t('board.gameOver.startNewGame')"
+              icon="pi pi-refresh"
+              @click="startNewGame"
             />
             <Button
               :label="t('board.gameOver.backToLobby')"

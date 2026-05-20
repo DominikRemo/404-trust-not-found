@@ -22,13 +22,9 @@ const hostConn = ref(null)
 const error = ref('')
 const gameStarted = ref(false)
 const sessionEnded = ref(false)
-const playAgainReadyIds = ref([])  // peer IDs ready for the next game
 
-const cardHoverStates = ref([])
-
-// Plain objects — not reactive; iterated in pure JS
+// Plain object — not reactive; iterated in pure JS
 const nameRegistry = {}
-const cardHoverRegistry = {}
 
 // ── Pure helpers ─────────────────────────────────────────────────────────────
 function generateCode(len = 6) {
@@ -63,26 +59,10 @@ function broadcastGameState() {
   )
 }
 
-// ── Play-again readiness broadcast ───────────────────────────────────────────
-function broadcastPlayAgainState() {
-  const msg = { type: 'PLAY_AGAIN_STATE', readyIds: playAgainReadyIds.value }
-  openConns.value.forEach(c => c.send(msg))
-}
-
-// ── Trigger a new game without disconnecting anyone ───────────────────────────
-function _triggerPlayAgain() {
-  playAgainReadyIds.value = []
+// ── Host-only: start (or restart) a game with whoever is currently connected ─
+function startNextGame() {
   _engine.setupGame(players.value)
-  // GAME_STATE_UPDATE keeps gameStarted=true on clients; no lobby trip needed
   broadcastGameState()
-}
-
-// ── Card hover helpers ────────────────────────────────────────────────────────
-function broadcastCardHoverUpdate() {
-  const states = Object.entries(cardHoverRegistry).map(([id, val]) => ({ id, ...val }))
-  cardHoverStates.value = states
-  const msg = { type: 'CARD_HOVER_BROADCAST', states }
-  openConns.value.forEach(c => c.send(msg))
 }
 
 // ── Connection management ─────────────────────────────────────────────────────
@@ -97,15 +77,14 @@ function registerConn(conn) {
     if (msg?.type === 'HELLO') {
       nameRegistry[remotePeer] = sanitizeName(msg.name)
       broadcastPlayerList()
+      // Late joiner: drop them straight onto the in-progress board (or end screen).
+      // Their hand is empty until the host starts the next game.
+      if (gameStarted.value) {
+        conn.send({ type: 'GAME_STARTED', state: _engine.serializeStateFor(remotePeer) })
+      }
     } else if (msg?.type === 'NAME_CHANGE') {
       nameRegistry[remotePeer] = sanitizeName(msg.name)
       broadcastPlayerList()
-    } else if (msg?.type === 'CARD_HOVER') {
-      cardHoverRegistry[remotePeer] = { name: nameRegistry[remotePeer] ?? remotePeer, cardId: msg.cardId }
-      broadcastCardHoverUpdate()
-    } else if (msg?.type === 'CARD_LEAVE') {
-      delete cardHoverRegistry[remotePeer]
-      broadcastCardHoverUpdate()
     } else if (msg?.type === 'PLAYER_ACTION') {
       const { action } = msg
       if (action?.type === 'MERGE_PR' && remotePeer === _engine.activeReviewer.value) {
@@ -114,19 +93,6 @@ function registerConn(conn) {
       } else if (action?.type === 'PLAYER_READY') {
         _engine.markReady(remotePeer)
         broadcastGameState()
-      } else if (action?.type === 'PLAY_AGAIN_READY') {
-        if (!playAgainReadyIds.value.includes(remotePeer)) {
-          playAgainReadyIds.value = [...playAgainReadyIds.value, remotePeer]
-        }
-        broadcastPlayAgainState()
-        // Check if all connected players (host + clients) are ready
-        const allPlayerIds = players.value.map(p => p.id)
-        const allReady = allPlayerIds.every(id =>
-          id === peerId.value
-            ? playAgainReadyIds.value.includes(peerId.value)
-            : playAgainReadyIds.value.includes(id)
-        )
-        if (allReady) _triggerPlayAgain()
       }
     }
   })
@@ -134,9 +100,7 @@ function registerConn(conn) {
   function removeConn() {
     openConns.value = openConns.value.filter(c => c.peer !== remotePeer)
     delete nameRegistry[remotePeer]
-    delete cardHoverRegistry[remotePeer]
     broadcastPlayerList()
-    broadcastCardHoverUpdate()
   }
 
   conn.on('close', removeConn)
@@ -229,10 +193,6 @@ export function useNetwork() {
           error.value = i18n.global.t('errors.lobbyFull')
           conn.close()
           isReady.value = false
-        } else if (msg?.type === 'CARD_HOVER_BROADCAST') {
-          cardHoverStates.value = msg.states
-        } else if (msg?.type === 'PLAY_AGAIN_STATE') {
-          playAgainReadyIds.value = msg.readyIds
         }
       })
 
@@ -263,7 +223,6 @@ export function useNetwork() {
 
   function startGame() {
     if (!isHost.value || players.value.length < MIN_PLAYERS) return
-    playAgainReadyIds.value = []
     _engine.setupGame(players.value)
     // Send each client only their own unmasked hand
     openConns.value.forEach(c =>
@@ -280,42 +239,16 @@ export function useNetwork() {
       } else if (action.type === 'PLAYER_READY') {
         _engine.markReady(peerId.value)
         broadcastGameState()
-      } else if (action.type === 'PLAY_AGAIN_READY') {
-        if (!playAgainReadyIds.value.includes(peerId.value)) {
-          playAgainReadyIds.value = [...playAgainReadyIds.value, peerId.value]
-        }
-        broadcastPlayAgainState()
-        const allPlayerIds = players.value.map(p => p.id)
-        const allReady = allPlayerIds.every(id => playAgainReadyIds.value.includes(id))
-        if (allReady) _triggerPlayAgain()
       }
     } else if (hostConn.value?.open) {
       hostConn.value.send({ type: 'PLAYER_ACTION', action })
     }
   }
 
-  function sendCardHover(cardId) {
-    if (isHost.value) {
-      cardHoverRegistry[peerId.value] = { name: localName.value, cardId }
-      broadcastCardHoverUpdate()
-    } else if (hostConn.value?.open) {
-      hostConn.value.send({ type: 'CARD_HOVER', cardId })
-    }
-  }
-
-  function sendClearHover() {
-    if (isHost.value) {
-      delete cardHoverRegistry[peerId.value]
-      broadcastCardHoverUpdate()
-    } else if (hostConn.value?.open) {
-      hostConn.value.send({ type: 'CARD_LEAVE' })
-    }
-  }
-
-  // Host-only: start next game with whoever is currently connected
-  function forceStartNextGame() {
+  // Host-only: deal a new game with whoever is currently connected
+  function startNewGame() {
     if (!isHost.value) return
-    _triggerPlayAgain()
+    startNextGame()
   }
 
   function leaveSession() {
@@ -339,10 +272,7 @@ export function useNetwork() {
     error.value = ''
     gameStarted.value = false
     sessionEnded.value = false
-    cardHoverStates.value = []
-    playAgainReadyIds.value = []
     Object.keys(nameRegistry).forEach(k => delete nameRegistry[k])
-    Object.keys(cardHoverRegistry).forEach(k => delete cardHoverRegistry[k])
     _engine.resetGame()
   }
 
@@ -355,16 +285,12 @@ export function useNetwork() {
     error,
     gameStarted,
     sessionEnded,
-    cardHoverStates,
-    playAgainReadyIds,
     hostPeerId,
     initHost,
     joinGame,
     changeName,
     startGame,
-    sendCardHover,
-    sendClearHover,
-    forceStartNextGame,
+    startNewGame,
     leaveSession,
     reset,
     dispatchAction,
