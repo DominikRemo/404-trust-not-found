@@ -70,7 +70,8 @@
       "backToLobby": "Back to Lobby",
       "readyForNextGame": "Ready for Next Game",
       "playAgainReadyCount": "{ready} / {total} ready for next game",
-      "forceStart": "Start with Current Players"
+      "forceStart": "Start with Current Players",
+      "lastRevealedCard": "Last revealed card"
     }
   },
   "infoCard": {
