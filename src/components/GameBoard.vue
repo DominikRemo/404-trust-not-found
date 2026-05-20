@@ -31,6 +31,7 @@ const lastMergedCard = computed(() =>
 const { theme, cycleTheme } = useTheme()
 const { locale, setLocale, SUPPORTED } = useLocale()
 const { t } = useI18n()
+const baseUrl = import.meta.env.BASE_URL
 
 const themeIcon  = computed(() => ({ system: 'pi pi-desktop', light: 'pi pi-sun', dark: 'pi pi-moon' }[theme.value]))
 const themeTitle = computed(() => ({ system: t('theme.system'), light: t('theme.light'), dark: t('theme.dark') }[theme.value]))
@@ -100,7 +101,7 @@ const myRole = computed(() => roles.value[peerId.value])
     <!-- ── Header ─────────────────────────────────────────────────────────── -->
     <header class="flex items-center justify-between px-6 py-3 bg-surface border-b border-border shadow-sm">
       <div class="flex items-center gap-3">
-        <span class="bg-blue-700 text-white text-xs font-bold tracking-widest px-2.5 py-1 rounded">404</span>
+        <span class="bg-ink text-page text-xs font-bold tracking-widest px-2.5 py-1 rounded">404</span>
         <h1 class="text-base font-semibold text-ink m-0">Trust Not Found</h1>
         <span class="text-xs text-ink-faint font-mono hidden sm:inline">{{ t('board.mainframeLabel') }}</span>
       </div>
@@ -135,14 +136,6 @@ const myRole = computed(() => roles.value[peerId.value])
           <i class="pi pi-github text-base" />
         </a>
 
-        <Button
-          :label="t('board.leaveGame')"
-          icon="pi pi-sign-out"
-          severity="danger"
-          outlined
-          size="small"
-          @click="leaveSession"
-        />
       </div>
     </header>
 
@@ -167,10 +160,10 @@ const myRole = computed(() => roles.value[peerId.value])
       <div class="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-none" style="z-index:30">
         <div
           v-if="gameState === 'viewing'"
-          class="flex items-center gap-2 bg-blue-700 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg"
+          class="flex items-center gap-2 bg-ink text-page text-xs font-bold px-4 py-1.5 rounded-full shadow-md"
         >
           <span class="uppercase tracking-widest">{{ t('board.viewingPhase') }}</span>
-          <span class="bg-white/20 rounded-full px-2 py-0.5 font-mono tabular-nums">
+          <span class="bg-page/20 rounded-full px-2 py-0.5 font-mono tabular-nums">
             {{ t('board.readyCount', { ready: readyPlayers.length, total: players.length }) }}
           </span>
         </div>
@@ -188,61 +181,56 @@ const myRole = computed(() => roles.value[peerId.value])
         </div>
       </div>
 
-      <!-- ── Role badge ─────────────────────────────────────────────────── -->
+      <!-- ── Role card ──────────────────────────────────────────────────── -->
       <div
         v-if="myRole"
-        class="absolute bottom-4 right-6 pointer-events-none"
-        style="z-index:30"
+        class="role-card absolute bottom-4 right-6 pointer-events-none rounded-lg overflow-hidden"
+        style="z-index:30; width: clamp(120px, 16vmin, 200px); aspect-ratio: 3 / 4;"
       >
-        <div
-          class="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border"
-          :class="myRole === 'goodDev'
-            ? 'bg-green-50 border-green-300 text-green-700'
-            : 'bg-red-50 border-red-300 text-red-700'"
-        >
-          {{ myRole === 'goodDev' ? t('board.roleGoodDev') : t('board.roleBadDev') }}
-        </div>
+        <img
+          :src="`${baseUrl}cards/${myRole}.png`"
+          :alt="myRole === 'goodDev' ? t('board.roleGoodDev') : t('board.roleBadDev')"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
       </div>
 
       <!-- ── Game over overlay ──────────────────────────────────────────── -->
       <div
         v-if="isGameOver"
-        class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-        style="z-index:50"
+        class="absolute inset-0 flex items-center justify-center backdrop-blur-sm"
+        style="z-index:50; background: color-mix(in srgb, var(--ink) 45%, transparent);"
         @click.stop
       >
-        <div class="bg-surface border border-border rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-6 w-[440px] max-w-[90vw] text-center">
+        <div class="game-over-card relative bg-surface rounded-2xl p-8 flex flex-col items-center gap-6 w-[440px] max-w-[90vw] text-center">
 
           <!-- Last revealed card -->
           <div v-if="lastMergedCard" class="w-full flex flex-col items-center gap-1">
-            <div class="text-[10px] font-bold uppercase tracking-widest text-ink-faint">
+            <div class="text-[10px] font-bold uppercase tracking-widest text-ink-dim">
               {{ t('board.gameOver.lastRevealedCard') }}
             </div>
             <div
-              class="px-5 py-2 rounded-lg font-black text-xs uppercase tracking-widest"
-              :class="{
-                'bg-green-100 text-green-800 border border-green-300': lastMergedCard.type === 'feature',
-                'bg-red-100 text-red-800 border border-red-300': lastMergedCard.type === 'bug',
-                'bg-slate-100 text-slate-700 border border-slate-300': lastMergedCard.type === 'chore',
-              }"
+              class="role-card relative overflow-hidden rounded-lg"
+              style="width: clamp(112px, 18vmin, 160px); aspect-ratio: 3 / 4;"
             >
-              {{ lastMergedCard.type.toUpperCase() }}
+              <img
+                :src="`${baseUrl}cards/${lastMergedCard.type}.png`"
+                :alt="lastMergedCard.type"
+                class="absolute inset-0 w-full h-full object-cover"
+              />
             </div>
           </div>
 
           <!-- Winner declaration -->
           <div
-            class="w-full rounded-xl py-4 px-6"
-            :class="gameState === 'goodDevsWin'
-              ? 'bg-green-50 border border-green-200'
-              : 'bg-red-50 border border-red-200'"
+            class="winner-banner w-full rounded-xl py-4 px-6"
+            :class="gameState === 'goodDevsWin' ? 'winner-good' : 'winner-bad'"
           >
             <div class="text-4xl mb-2">
               {{ gameState === 'goodDevsWin' ? '🎉' : gameState === 'deadlineMissed' ? '⏰' : '🐛' }}
             </div>
             <div
               class="text-xs font-bold uppercase tracking-widest mb-1"
-              :class="gameState === 'goodDevsWin' ? 'text-green-600' : 'text-red-500'"
+              :class="gameState === 'goodDevsWin' ? 'text-emerald-700' : 'text-rose-700'"
             >
               {{ gameState === 'goodDevsWin' ? t('board.gameOver.winnerGoodDevs') : t('board.gameOver.winnerBadDevs') }}
             </div>
@@ -251,7 +239,7 @@ const myRole = computed(() => roles.value[peerId.value])
                : gameState === 'deadlineMissed' ? t('board.gameOver.headlineDeadlineMissed')
                : t('board.gameOver.headlineProductionDown') }}
             </h2>
-            <p class="text-xs text-ink-faint mt-1 mb-0">
+            <p class="text-xs text-ink-dim mt-1 mb-0">
               {{ gameState === 'goodDevsWin'    ? t('board.gameOver.descAllFeaturesShipped')
                : gameState === 'deadlineMissed' ? t('board.gameOver.descDeadlineMissed')
                : t('board.gameOver.descProductionDown') }}
@@ -260,24 +248,22 @@ const myRole = computed(() => roles.value[peerId.value])
 
           <!-- Player role reveal -->
           <div class="w-full">
-            <div class="text-[10px] font-bold uppercase tracking-widest text-ink-faint mb-3">
+            <div class="text-[10px] font-bold uppercase tracking-widest text-ink-dim mb-3">
               {{ t('board.gameOver.roleReveal') }}
             </div>
             <div class="flex flex-col gap-2">
               <div
                 v-for="player in players"
                 :key="player.id"
-                class="flex items-center justify-between px-3 py-2 rounded-lg border"
-                :class="roles[player.id] === 'goodDev'
-                  ? 'bg-green-50 border-green-200'
-                  : 'bg-red-50 border-red-200'"
+                class="role-row flex items-center justify-between px-3 py-2 rounded-lg"
+                :class="roles[player.id] === 'goodDev' ? 'role-good' : 'role-bad'"
               >
                 <div class="flex items-center gap-2">
                   <div
                     class="w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center"
                     :class="roles[player.id] === 'goodDev'
-                      ? 'bg-green-200 text-green-800'
-                      : 'bg-red-200 text-red-800'"
+                      ? 'bg-emerald-700/15 text-emerald-800'
+                      : 'bg-rose-700/15 text-rose-800'"
                   >
                     {{ player.name.charAt(0).toUpperCase() }}
                   </div>
@@ -289,7 +275,7 @@ const myRole = computed(() => roles.value[peerId.value])
                 </div>
                 <span
                   class="text-[10px] font-bold uppercase tracking-wider"
-                  :class="roles[player.id] === 'goodDev' ? 'text-green-700' : 'text-red-600'"
+                  :class="roles[player.id] === 'goodDev' ? 'text-emerald-800' : 'text-rose-800'"
                 >
                   {{ roles[player.id] === 'goodDev' ? t('board.roleGoodDev') : t('board.roleBadDev') }}
                 </span>
@@ -300,15 +286,14 @@ const myRole = computed(() => roles.value[peerId.value])
           <!-- Host: room code so dropped/new players can rejoin between games -->
           <div v-if="isHost" class="w-full flex flex-col gap-2">
             <span class="text-[10px] font-bold uppercase tracking-widest text-ink-faint">{{ t('lobby.roomCode') }}</span>
-            <div class="flex items-center gap-3">
-              <code class="flex-1 font-mono text-xl font-semibold tracking-[0.25em] bg-raised border border-border rounded-lg px-4 py-2 text-ink">
+            <div class="flex items-stretch gap-3">
+              <code class="flex-1 flex items-center font-mono text-xl font-semibold tracking-[0.25em] bg-raised border border-border rounded-lg px-4 text-ink">
                 {{ peerId }}
               </code>
               <Button
                 :label="copied ? t('lobby.copied') : t('lobby.copy')"
                 :icon="copied ? 'pi pi-check' : 'pi pi-copy'"
                 severity="secondary"
-                size="small"
                 @click="copyCode"
               />
             </div>
@@ -346,11 +331,11 @@ const myRole = computed(() => roles.value[peerId.value])
         <line
           v-for="player in orderedPlayers"
           :key="`conn-${player.id}`"
+          class="topology-line"
           :x1="CX * 100"
           :y1="CY * 100"
           :x2="visualPos(player).x * 100"
           :y2="visualPos(player).y * 100"
-          stroke="rgba(148,163,184,0.35)"
           stroke-width="0.28"
           stroke-dasharray="1.5 1.5"
         />
@@ -402,7 +387,47 @@ const myRole = computed(() => roles.value[peerId.value])
 }
 
 .topology-bg {
-  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.22) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--ink) 18%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
+
+.topology-line {
+  stroke: color-mix(in srgb, var(--ink) 32%, transparent);
+}
+
+/* Role card paper frame */
+.role-card {
+  border: 1px solid rgba(28, 39, 71, 0.45);
+  box-shadow:
+    0 6px 18px color-mix(in srgb, var(--ink) 18%, transparent),
+    0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+/* Game-over modal — paper card */
+.game-over-card {
+  border: 1px solid color-mix(in srgb, var(--ink) 45%, transparent);
+  box-shadow:
+    0 18px 48px color-mix(in srgb, var(--ink) 35%, transparent),
+    0 4px 8px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+/* Winner banner — tinted paper */
+.winner-banner {
+  border: 1px solid currentColor;
+}
+.winner-banner.winner-good {
+  background: color-mix(in srgb, #6ba287 14%, var(--surface-bg));
+  color: color-mix(in srgb, #2f6b4f 60%, var(--ink));
+}
+.winner-banner.winner-bad {
+  background: color-mix(in srgb, #c4736b 14%, var(--surface-bg));
+  color: color-mix(in srgb, #8a3a36 60%, var(--ink));
+}
+
+/* Role reveal rows — tinted paper */
+.role-row {
+  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+}
+.role-row.role-good { background: color-mix(in srgb, #6ba287 12%, var(--surface-bg)); }
+.role-row.role-bad  { background: color-mix(in srgb, #c4736b 12%, var(--surface-bg)); }
 </style>

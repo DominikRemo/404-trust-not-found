@@ -10,17 +10,38 @@ import { i18n } from './i18n/index.js'
 const GameTheme = definePreset(Aura, {
   semantic: {
     primary: {
-      50:  '#eff6ff',
-      100: '#dbeafe',
-      200: '#bfdbfe',
-      300: '#93c5fd',
-      400: '#60a5fa',
-      500: '#3b82f6',
-      600: '#2563eb',
-      700: '#1d4ed8',
-      800: '#1e40af',
-      900: '#1e3a8a',
-      950: '#172554',
+      50:  '#eef0f5',
+      100: '#d4d9e3',
+      200: '#aab3c8',
+      300: '#7c8aab',
+      400: '#56688d',
+      500: '#3a4d72',
+      600: '#2a3a5a',
+      700: '#1c2747',
+      800: '#141d38',
+      900: '#0d152a',
+      950: '#07101d',
+    },
+  },
+  components: {
+    button: {
+      colorScheme: {
+        dark: {
+          root: {
+            primary: {
+              background: '{primary.200}',
+              hoverBackground: '{primary.100}',
+              activeBackground: '{primary.300}',
+              borderColor: '{primary.200}',
+              hoverBorderColor: '{primary.100}',
+              activeBorderColor: '{primary.300}',
+              color: '{primary.950}',
+              hoverColor: '{primary.950}',
+              activeColor: '{primary.950}',
+            },
+          },
+        },
+      },
     },
   },
 })
