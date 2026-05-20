@@ -192,10 +192,6 @@ const myRole = computed(() => roles.value[peerId.value])
           :alt="myRole === 'goodDev' ? t('board.roleGoodDev') : t('board.roleBadDev')"
           class="absolute inset-0 w-full h-full object-cover"
         />
-        <span class="bracket bracket-tl" aria-hidden="true" />
-        <span class="bracket bracket-tr" aria-hidden="true" />
-        <span class="bracket bracket-bl" aria-hidden="true" />
-        <span class="bracket bracket-br" aria-hidden="true" />
       </div>
 
       <!-- ── Game over overlay ──────────────────────────────────────────── -->
@@ -206,10 +202,6 @@ const myRole = computed(() => roles.value[peerId.value])
         @click.stop
       >
         <div class="game-over-card relative bg-surface rounded-2xl p-8 flex flex-col items-center gap-6 w-[440px] max-w-[90vw] text-center">
-          <span class="bracket bracket-tl" aria-hidden="true" />
-          <span class="bracket bracket-tr" aria-hidden="true" />
-          <span class="bracket bracket-bl" aria-hidden="true" />
-          <span class="bracket bracket-br" aria-hidden="true" />
 
           <!-- Last revealed card -->
           <div v-if="lastMergedCard" class="w-full flex flex-col items-center gap-1">
@@ -225,22 +217,14 @@ const myRole = computed(() => roles.value[peerId.value])
                 :alt="lastMergedCard.type"
                 class="absolute inset-0 w-full h-full object-cover"
               />
-              <span class="bracket bracket-tl" aria-hidden="true" />
-              <span class="bracket bracket-tr" aria-hidden="true" />
-              <span class="bracket bracket-bl" aria-hidden="true" />
-              <span class="bracket bracket-br" aria-hidden="true" />
             </div>
           </div>
 
           <!-- Winner declaration -->
           <div
-            class="winner-banner relative w-full rounded-xl py-4 px-6"
+            class="winner-banner w-full rounded-xl py-4 px-6"
             :class="gameState === 'goodDevsWin' ? 'winner-good' : 'winner-bad'"
           >
-            <span class="bracket bracket-tl" aria-hidden="true" />
-            <span class="bracket bracket-tr" aria-hidden="true" />
-            <span class="bracket bracket-bl" aria-hidden="true" />
-            <span class="bracket bracket-br" aria-hidden="true" />
             <div class="text-4xl mb-2">
               {{ gameState === 'goodDevsWin' ? '🎉' : gameState === 'deadlineMissed' ? '⏰' : '🐛' }}
             </div>
@@ -302,15 +286,14 @@ const myRole = computed(() => roles.value[peerId.value])
           <!-- Host: room code so dropped/new players can rejoin between games -->
           <div v-if="isHost" class="w-full flex flex-col gap-2">
             <span class="text-[10px] font-bold uppercase tracking-widest text-ink-faint">{{ t('lobby.roomCode') }}</span>
-            <div class="flex items-center gap-3">
-              <code class="flex-1 font-mono text-xl font-semibold tracking-[0.25em] bg-raised border border-border rounded-lg px-4 py-2 text-ink">
+            <div class="flex items-stretch gap-3">
+              <code class="flex-1 flex items-center font-mono text-xl font-semibold tracking-[0.25em] bg-raised border border-border rounded-lg px-4 text-ink">
                 {{ peerId }}
               </code>
               <Button
                 :label="copied ? t('lobby.copied') : t('lobby.copy')"
                 :icon="copied ? 'pi pi-check' : 'pi pi-copy'"
                 severity="secondary"
-                size="small"
                 @click="copyCode"
               />
             </div>
@@ -412,26 +395,13 @@ const myRole = computed(() => roles.value[peerId.value])
   stroke: color-mix(in srgb, var(--ink) 32%, transparent);
 }
 
-/* Role card paper frame — brackets always navy because the card artwork is always light */
+/* Role card paper frame */
 .role-card {
   border: 1px solid rgba(28, 39, 71, 0.45);
   box-shadow:
     0 6px 18px color-mix(in srgb, var(--ink) 18%, transparent),
     0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent);
 }
-.role-card .bracket {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border-color: rgba(28, 39, 71, 0.85);
-  border-style: solid;
-  border-width: 0;
-  pointer-events: none;
-}
-.role-card .bracket-tl { top: 6px;    left: 6px;    border-top-width: 2px;    border-left-width: 2px;    border-top-left-radius: 4px; }
-.role-card .bracket-tr { top: 6px;    right: 6px;   border-top-width: 2px;    border-right-width: 2px;   border-top-right-radius: 4px; }
-.role-card .bracket-bl { bottom: 6px; left: 6px;    border-bottom-width: 2px; border-left-width: 2px;    border-bottom-left-radius: 4px; }
-.role-card .bracket-br { bottom: 6px; right: 6px;   border-bottom-width: 2px; border-right-width: 2px;   border-bottom-right-radius: 4px; }
 
 /* Game-over modal — paper card */
 .game-over-card {
@@ -440,19 +410,6 @@ const myRole = computed(() => roles.value[peerId.value])
     0 18px 48px color-mix(in srgb, var(--ink) 35%, transparent),
     0 4px 8px color-mix(in srgb, var(--ink) 18%, transparent);
 }
-.game-over-card > .bracket {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  border-color: color-mix(in srgb, var(--ink) 75%, transparent);
-  border-style: solid;
-  border-width: 0;
-  pointer-events: none;
-}
-.game-over-card > .bracket-tl { top: 10px;    left: 10px;    border-top-width: 2px;    border-left-width: 2px;    border-top-left-radius: 4px; }
-.game-over-card > .bracket-tr { top: 10px;    right: 10px;   border-top-width: 2px;    border-right-width: 2px;   border-top-right-radius: 4px; }
-.game-over-card > .bracket-bl { bottom: 10px; left: 10px;    border-bottom-width: 2px; border-left-width: 2px;    border-bottom-left-radius: 4px; }
-.game-over-card > .bracket-br { bottom: 10px; right: 10px;   border-bottom-width: 2px; border-right-width: 2px;   border-bottom-right-radius: 4px; }
 
 /* Winner banner — tinted paper */
 .winner-banner {
@@ -466,19 +423,6 @@ const myRole = computed(() => roles.value[peerId.value])
   background: color-mix(in srgb, #c4736b 14%, var(--surface-bg));
   color: color-mix(in srgb, #8a3a36 60%, var(--ink));
 }
-.winner-banner > .bracket {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-color: currentColor;
-  border-style: solid;
-  border-width: 0;
-  pointer-events: none;
-}
-.winner-banner > .bracket-tl { top: 5px;    left: 5px;    border-top-width: 1.5px;    border-left-width: 1.5px; }
-.winner-banner > .bracket-tr { top: 5px;    right: 5px;   border-top-width: 1.5px;    border-right-width: 1.5px; }
-.winner-banner > .bracket-bl { bottom: 5px; left: 5px;    border-bottom-width: 1.5px; border-left-width: 1.5px; }
-.winner-banner > .bracket-br { bottom: 5px; right: 5px;   border-bottom-width: 1.5px; border-right-width: 1.5px; }
 
 /* Role reveal rows — tinted paper */
 .role-row {

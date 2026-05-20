@@ -41,12 +41,6 @@ function cardImage(type) {
 
 <template>
   <div class="main-repo-hub">
-    <!-- Bracket corners — echo the card-back framing -->
-    <span class="bracket bracket-tl" aria-hidden="true" />
-    <span class="bracket bracket-tr" aria-hidden="true" />
-    <span class="bracket bracket-bl" aria-hidden="true" />
-    <span class="bracket bracket-br" aria-hidden="true" />
-
     <!-- Title bar -->
     <div class="flex items-center justify-between px-5 pt-3 pb-2 border-b border-ink/15">
       <div class="flex items-center gap-2">
@@ -120,8 +114,6 @@ function cardImage(type) {
   min-width: 260px;
   max-width: 320px;
   background-color: var(--surface-bg);
-  background-image: radial-gradient(circle, color-mix(in srgb, var(--ink) 14%, transparent) 1px, transparent 1px);
-  background-size: 12px 12px;
   border: 1px solid color-mix(in srgb, var(--ink) 50%, transparent);
   border-radius: 14px;
   box-shadow:
@@ -134,21 +126,6 @@ function cardImage(type) {
   0%, 100% { box-shadow: 0 10px 28px color-mix(in srgb, var(--ink) 22%, transparent), 0 2px 4px color-mix(in srgb, var(--ink) 14%, transparent); }
   50%      { box-shadow: 0 12px 36px color-mix(in srgb, var(--ink) 34%, transparent), 0 2px 4px color-mix(in srgb, var(--ink) 14%, transparent); }
 }
-
-/* Bracket corners — match the card-back framing */
-.bracket {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border-color: color-mix(in srgb, var(--ink) 75%, transparent);
-  border-style: solid;
-  border-width: 0;
-  pointer-events: none;
-}
-.bracket-tl { top: 6px;    left: 6px;    border-top-width: 2px;    border-left-width: 2px;    border-top-left-radius: 4px; }
-.bracket-tr { top: 6px;    right: 6px;   border-top-width: 2px;    border-right-width: 2px;   border-top-right-radius: 4px; }
-.bracket-bl { bottom: 6px; left: 6px;    border-bottom-width: 2px; border-left-width: 2px;    border-bottom-left-radius: 4px; }
-.bracket-br { bottom: 6px; right: 6px;   border-bottom-width: 2px; border-right-width: 2px;   border-bottom-right-radius: 4px; }
 
 .merged-card {
   width: clamp(48px, 6vmin, 80px);

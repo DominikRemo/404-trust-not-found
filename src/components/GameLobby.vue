@@ -199,15 +199,14 @@ function saveEdit() {
         <!-- Room code (host only) -->
         <div v-if="isHost" class="flex flex-col gap-2">
           <span class="text-xs font-semibold uppercase tracking-wider text-ink-faint">{{ t('lobby.roomCode') }}</span>
-          <div class="flex items-center gap-3">
-            <code class="flex-1 font-mono text-2xl font-semibold tracking-[0.25em] bg-raised border border-border rounded-lg px-4 py-2.5 text-ink">
+          <div class="flex items-stretch gap-3">
+            <code class="flex-1 flex items-center font-mono text-2xl font-semibold tracking-[0.25em] bg-raised border border-border rounded-lg px-4 text-ink">
               {{ peerId }}
             </code>
             <Button
               :label="copied ? t('lobby.copied') : t('lobby.copy')"
               :icon="copied ? 'pi pi-check' : 'pi pi-copy'"
               severity="secondary"
-              size="small"
               @click="copyCode"
             />
           </div>
