@@ -12,40 +12,12 @@ const props = defineProps({
   cy: { type: Number, default: 0.38 },
 })
 
-const { hands, gameState, activeReviewer } = useGameEngine()
-const { peerId, players, cardHoverStates, dispatchAction, sendCardHover, sendClearHover } = useNetwork()
+const { hands, gameState } = useGameEngine()
+const { dispatchAction } = useNetwork()
 const { t } = useI18n()
 
 // ── Cards for this player node ────────────────────────────────────────────────
 const cardList = computed(() => hands.value[props.player.id] ?? [])
-
-// ── Hover state computation ───────────────────────────────────────────────────
-const cardHoverData = computed(() => {
-  const map = {}
-  for (const state of cardHoverStates.value) {
-    if (state.id === peerId.value) continue
-    if (!map[state.cardId]) map[state.cardId] = []
-    const p = players.value.find(pl => pl.id === state.id)
-    if (p) map[state.cardId].push(p)
-  }
-  return map
-})
-
-function cardHoverers(cardId) {
-  return cardHoverData.value[cardId] ?? []
-}
-
-function cardGlowClass(cardId) {
-  const hoverers = cardHoverers(cardId)
-  if (!hoverers.length) return ''
-  // Blue glow if the active reviewer is among the hoverers, yellow otherwise
-  return hoverers.some(p => p.id === activeReviewer.value) ? 'card-glow-blue' : 'card-glow-yellow'
-}
-
-function cardThinkingPlayer(cardId) {
-  // Show the thinking tooltip for whoever is the active reviewer hovering this card
-  return cardHoverers(cardId).find(p => p.id === activeReviewer.value) ?? null
-}
 
 // ── Opponent card positioning — above the avatar node ────────────────────────
 const opponentCardsStyle = computed(() => {
@@ -56,15 +28,6 @@ const opponentCardsStyle = computed(() => {
     transform: 'translate(-50%, calc(-100% - 28px))',
   }
 })
-
-// ── Interactions ──────────────────────────────────────────────────────────────
-function onCardHoverEnter(cardId) {
-  sendCardHover(cardId)
-}
-
-function onCardHoverLeave() {
-  sendClearHover()
-}
 
 function onOpponentCardClick(cardIndex) {
   if (!props.isMyTurn || gameState.value !== 'playing') return
@@ -80,34 +43,11 @@ function onOpponentCardClick(cardIndex) {
         v-for="(card, cardIndex) in cardList"
         :key="card.id"
         class="opponent-card relative rounded-lg shadow-md"
-        :class="[
-          cardGlowClass(card.id),
-          isMyTurn && !isActiveReviewer && gameState === 'playing' ? 'cursor-pointer' : 'cursor-default',
-        ]"
+        :class="isMyTurn && !isActiveReviewer && gameState === 'playing' ? 'cursor-pointer' : 'cursor-default'"
         :style="{ '--card-index': cardIndex }"
-        @mouseenter="onCardHoverEnter(card.id)"
-        @mouseleave="onCardHoverLeave()"
         @click.stop="onOpponentCardClick(cardIndex)"
       >
-        <div
-          v-if="cardThinkingPlayer(card.id)"
-          class="thinking-tooltip absolute -top-9 left-1/2 -translate-x-1/2 bg-white border border-border rounded-lg px-2.5 py-1.5 text-xs font-medium text-ink whitespace-nowrap shadow-lg pointer-events-none"
-          style="z-index:35"
-        >
-          {{ t('board.thinkingAbout', { name: cardThinkingPlayer(card.id).name }) }}
-        </div>
         <span class="card-watermark absolute inset-0 flex items-center justify-center font-black font-mono select-none pointer-events-none">404</span>
-        <div v-if="cardHoverers(card.id).length" class="absolute -top-2 -right-1 flex" style="z-index:10">
-          <div
-            v-for="(hoverer, idx) in cardHoverers(card.id)"
-            :key="hoverer.id"
-            class="w-4 h-4 rounded-full bg-blue-700 text-white text-[8px] font-bold flex items-center justify-center border border-white shadow-sm"
-            :style="{ marginLeft: idx > 0 ? '-5px' : '0', zIndex: idx }"
-            :title="hoverer.name"
-          >
-            {{ hoverer.name.charAt(0).toUpperCase() }}
-          </div>
-        </div>
       </div>
     </TransitionGroup>
   </div>
@@ -166,18 +106,6 @@ function onOpponentCardClick(cardIndex) {
   font-size: 10px;
   color: rgba(148, 163, 184, 0.55);
   user-select: none;
-}
-
-/* ── Thinking tooltip caret ──────────────────────────────────────────────── */
-.thinking-tooltip::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 5px 5px 0;
-  border-style: solid;
-  border-color: var(--border-color, #e2e8f0) transparent transparent;
 }
 
 /* ── Deal animation (cards flying in at sprint start) ────────────────────── */

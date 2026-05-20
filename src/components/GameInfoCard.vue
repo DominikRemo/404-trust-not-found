@@ -28,10 +28,7 @@ const badDevLabel = computed(() => {
         <span class="w-2 h-2 rounded-full bg-red-400 shrink-0" />
         <span class="text-xs text-ink-dim">{{ t('infoCard.badDevs') }}</span>
       </div>
-      <span class="text-xs font-bold text-red-600 tabular-nums">
-        {{ badDevLabel }}
-        <span class="font-normal text-ink-faint text-[10px]">{{ t('infoCard.possible') }}</span>
-      </span>
+      <span class="text-xs font-bold text-red-600 tabular-nums">{{ badDevLabel }}</span>
     </div>
 
     <!-- Features merged -->

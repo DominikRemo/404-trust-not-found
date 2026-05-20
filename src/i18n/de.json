@@ -42,7 +42,6 @@
     "mainframeLabel": "/ main",
     "leaveGame": "Spiel verlassen",
     "nodesConnected": "{count} Devs verbunden",
-    "thinkingAbout": "{name} denkt nach...",
     "mainRepo": "Haupt-Repository",
     "currentSprint": "Aktueller Sprint · Gemergte PRs",
     "previousSprints": "Vorherige Sprints",
@@ -68,15 +67,13 @@
       "descProductionDown": "Zu viele Bug-PRs wurden in den Main-Branch gemergt.",
       "roleReveal": "Rollen-Enthüllung",
       "backToLobby": "Zurück zur Lobby",
-      "readyForNextGame": "Bereit für das nächste Spiel",
-      "playAgainReadyCount": "{ready} / {total} Devs bereit",
-      "forceStart": "Mit aktuellen Devs starten"
+      "startNewGame": "Neues Spiel starten",
+      "lastRevealedCard": "Zuletzt aufgedeckte Karte"
     }
   },
   "infoCard": {
     "title": "Spielstatus",
     "badDevs": "Bad Devs",
-    "possible": "möglich",
     "featuresMerged": "Features gemergt",
     "bugsMerged": "Bugs gemergt"
   },

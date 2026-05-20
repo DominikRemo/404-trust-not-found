@@ -5,7 +5,7 @@ import { useGameEngine } from '../composables/useGameEngine.js'
 import { useNetwork } from '../composables/useNetwork.js'
 
 const { hands, gameState, readyPlayers, players, activeReviewer } = useGameEngine()
-const { peerId, players: networkPlayers, cardHoverStates, dispatchAction, sendCardHover, sendClearHover } = useNetwork()
+const { peerId, players: networkPlayers, dispatchAction } = useNetwork()
 
 const localPlayer = computed(() => networkPlayers.value.find(p => p.id === peerId.value))
 const isReviewing = computed(() => peerId.value === activeReviewer.value)
@@ -22,71 +22,6 @@ const hasMarkedReady = computed(() => readyPlayers.value.includes(peerId.value))
 
 function onPutDownCards() {
   dispatchAction({ type: 'PLAYER_READY' })
-}
-
-// ── Hover / lock state ────────────────────────────────────────────────────────
-const lockedCardId = ref(null)
-const hoverCardId  = ref(null)
-
-const localHoveredCardId = computed(() => lockedCardId.value ?? hoverCardId.value)
-
-const cardHoverData = computed(() => {
-  const map = {}
-  for (const state of cardHoverStates.value) {
-    if (state.id === peerId.value) continue
-    if (!map[state.cardId]) map[state.cardId] = []
-    const player = networkPlayers.value.find(p => p.id === state.id)
-    if (player) map[state.cardId].push(player)
-  }
-  if (localHoveredCardId.value) {
-    const cardId = localHoveredCardId.value
-    if (!map[cardId]) map[cardId] = []
-    const localPlayer = networkPlayers.value.find(p => p.id === peerId.value)
-    if (localPlayer) map[cardId].push(localPlayer)
-  }
-  return map
-})
-
-function cardHoverers(cardId) {
-  return cardHoverData.value[cardId] ?? []
-}
-
-function cardGlowClass(cardId) {
-  const hoverers = cardHoverers(cardId)
-  if (!hoverers.length) return ''
-  // Blue if the active reviewer is thinking about this card
-  return hoverers.some(h => h.id === activeReviewer.value) ? 'card-glow-blue' : 'card-glow-yellow'
-}
-
-function onCardHoverEnter(cardId) {
-  if (lockedCardId.value) return
-  hoverCardId.value = cardId
-  sendCardHover(cardId)
-}
-
-function onCardHoverLeave() {
-  if (lockedCardId.value) return
-  hoverCardId.value = null
-  sendClearHover()
-}
-
-function onLocalCardClick(cardId) {
-  if (lockedCardId.value === cardId) {
-    lockedCardId.value = null
-    hoverCardId.value  = null
-    sendClearHover()
-  } else {
-    lockedCardId.value = cardId
-    hoverCardId.value  = null
-    sendCardHover(cardId)
-  }
-}
-
-function onBoardClick() {
-  if (lockedCardId.value) {
-    lockedCardId.value = null
-    sendClearHover()
-  }
 }
 
 // ── Card type helpers ─────────────────────────────────────────────────────────
@@ -110,7 +45,7 @@ watch(gameState, (newVal, oldVal) => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center gap-3" @click="onBoardClick">
+  <div class="flex flex-col items-center gap-3">
     <!-- Card fan -->
     <TransitionGroup
       name="deal"
@@ -129,15 +64,8 @@ watch(gameState, (newVal, oldVal) => {
         }"
       >
         <div
-          class="local-card relative rounded-xl shadow-xl cursor-pointer flex flex-col items-center justify-center gap-1"
-          :class="[
-            cardGlowClass(card.id),
-            { 'card-locked': lockedCardId === card.id },
-            cardsAreVisible ? cardTypeClass(card.type) : '',
-          ]"
-          @mouseenter="onCardHoverEnter(card.id)"
-          @mouseleave="onCardHoverLeave()"
-          @click.stop="onLocalCardClick(card.id)"
+          class="local-card relative rounded-xl shadow-xl flex flex-col items-center justify-center gap-1"
+          :class="cardsAreVisible ? cardTypeClass(card.type) : ''"
         >
           <!-- Face-up: type label during viewing window -->
           <span
@@ -150,26 +78,6 @@ watch(gameState, (newVal, oldVal) => {
             class="card-watermark-lg absolute inset-0 flex items-center justify-center font-black font-mono select-none pointer-events-none"
             :class="cardsAreVisible ? 'opacity-10' : 'opacity-40'"
           >404</span>
-
-          <!-- Lock pin -->
-          <span
-            v-if="lockedCardId === card.id"
-            class="lock-pin-lg absolute top-1.5 left-1.5 rounded-full bg-blue-500 pointer-events-none"
-            style="z-index:5"
-          />
-
-          <!-- Hover badges -->
-          <div v-if="cardHoverers(card.id).length" class="absolute -top-3 -right-1.5 flex" style="z-index:10">
-            <div
-              v-for="(hoverer, idx) in cardHoverers(card.id)"
-              :key="hoverer.id"
-              class="w-6 h-6 rounded-full bg-blue-700 text-white text-[10px] font-bold flex items-center justify-center border-2 border-white shadow-md"
-              :style="{ marginLeft: idx > 0 ? '-8px' : '0', zIndex: idx }"
-              :title="hoverer.name"
-            >
-              {{ hoverer.name.charAt(0).toUpperCase() }}
-            </div>
-          </div>
         </div>
       </div>
     </TransitionGroup>
@@ -239,8 +147,7 @@ watch(gameState, (newVal, oldVal) => {
   border-color: rgba(148, 163, 184, 0.6);
 }
 
-.local-card:hover,
-.local-card.card-locked {
+.local-card:hover {
   transform: translateY(-10px);
 }
 
@@ -249,13 +156,6 @@ watch(gameState, (newVal, oldVal) => {
   font-size: 22px;
   color: rgba(148, 163, 184, 0.4);
   user-select: none;
-}
-
-/* ── Lock pin ─────────────────────────────────────────────────────────────── */
-.lock-pin-lg {
-  width: 7px;
-  height: 7px;
-  box-shadow: 0 0 6px rgba(59, 130, 246, 0.9);
 }
 
 /* ── Deal animation (staggered card-in at sprint start) ──────────────────── */

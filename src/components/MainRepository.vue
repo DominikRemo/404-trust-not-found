@@ -3,17 +3,24 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useGameEngine } from '../composables/useGameEngine.js'
 
-const { mainRepo, currentSprint } = useGameEngine()
+const { mainRepo, currentSprint, gameState } = useGameEngine()
 const { t } = useI18n()
 
+// During viewing phase keep the just-completed sprint's cards visible as full cards
+const visibleFromSprint = computed(() =>
+  gameState.value === 'viewing' && currentSprint.value > 1
+    ? currentSprint.value - 1
+    : currentSprint.value
+)
+
 const currentSprintCards = computed(() =>
-  mainRepo.value.filter(c => c.sprint === currentSprint.value)
+  mainRepo.value.filter(c => c.sprint >= visibleFromSprint.value)
 )
 
 const previousSprintGroups = computed(() => {
   const groups = {}
   for (const card of mainRepo.value) {
-    if (card.sprint < currentSprint.value) {
+    if (card.sprint < visibleFromSprint.value) {
       if (!groups[card.sprint]) groups[card.sprint] = []
       groups[card.sprint].push(card)
     }
@@ -49,7 +56,7 @@ function cardTypeLabel(type) {
     <div class="px-3 pt-2.5 pb-2">
       <div class="text-white/50 text-[9px] font-mono uppercase tracking-widest mb-2 flex items-center gap-1.5">
         <span class="w-1 h-1 rounded-full bg-green-400/70 shrink-0" />
-        Sprint {{ currentSprint }} · Merged PRs
+        Sprint {{ visibleFromSprint }} · Merged PRs
       </div>
       <TransitionGroup name="hub-enter" tag="div" class="flex gap-2 flex-wrap min-h-[64px] items-center">
         <div
