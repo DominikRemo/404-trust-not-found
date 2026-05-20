@@ -70,7 +70,8 @@
       "backToLobby": "Zurück zur Lobby",
       "readyForNextGame": "Bereit für das nächste Spiel",
       "playAgainReadyCount": "{ready} / {total} Devs bereit",
-      "forceStart": "Mit aktuellen Devs starten"
+      "forceStart": "Mit aktuellen Devs starten",
+      "lastRevealedCard": "Zuletzt aufgedeckte Karte"
     }
   },
   "infoCard": {
