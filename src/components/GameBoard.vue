@@ -101,7 +101,7 @@ const myRole = computed(() => roles.value[peerId.value])
     <!-- ── Header ─────────────────────────────────────────────────────────── -->
     <header class="flex items-center justify-between px-6 py-3 bg-surface border-b border-border shadow-sm">
       <div class="flex items-center gap-3">
-        <span class="bg-blue-700 text-white text-xs font-bold tracking-widest px-2.5 py-1 rounded">404</span>
+        <span class="bg-ink text-page text-xs font-bold tracking-widest px-2.5 py-1 rounded">404</span>
         <h1 class="text-base font-semibold text-ink m-0">Trust Not Found</h1>
         <span class="text-xs text-ink-faint font-mono hidden sm:inline">{{ t('board.mainframeLabel') }}</span>
       </div>
@@ -136,14 +136,6 @@ const myRole = computed(() => roles.value[peerId.value])
           <i class="pi pi-github text-base" />
         </a>
 
-        <Button
-          :label="t('board.leaveGame')"
-          icon="pi pi-sign-out"
-          severity="danger"
-          outlined
-          size="small"
-          @click="leaveSession"
-        />
       </div>
     </header>
 
@@ -168,10 +160,10 @@ const myRole = computed(() => roles.value[peerId.value])
       <div class="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-none" style="z-index:30">
         <div
           v-if="gameState === 'viewing'"
-          class="flex items-center gap-2 bg-blue-700 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg"
+          class="flex items-center gap-2 bg-ink text-page text-xs font-bold px-4 py-1.5 rounded-full shadow-md"
         >
           <span class="uppercase tracking-widest">{{ t('board.viewingPhase') }}</span>
-          <span class="bg-white/20 rounded-full px-2 py-0.5 font-mono tabular-nums">
+          <span class="bg-page/20 rounded-full px-2 py-0.5 font-mono tabular-nums">
             {{ t('board.readyCount', { ready: readyPlayers.length, total: players.length }) }}
           </span>
         </div>
@@ -192,7 +184,7 @@ const myRole = computed(() => roles.value[peerId.value])
       <!-- ── Role card ──────────────────────────────────────────────────── -->
       <div
         v-if="myRole"
-        class="absolute bottom-4 right-6 pointer-events-none rounded-lg overflow-hidden shadow-lg"
+        class="role-card absolute bottom-4 right-6 pointer-events-none rounded-lg overflow-hidden"
         style="z-index:30; width: clamp(120px, 16vmin, 200px); aspect-ratio: 3 / 4;"
       >
         <img
@@ -200,24 +192,32 @@ const myRole = computed(() => roles.value[peerId.value])
           :alt="myRole === 'goodDev' ? t('board.roleGoodDev') : t('board.roleBadDev')"
           class="absolute inset-0 w-full h-full object-cover"
         />
+        <span class="bracket bracket-tl" aria-hidden="true" />
+        <span class="bracket bracket-tr" aria-hidden="true" />
+        <span class="bracket bracket-bl" aria-hidden="true" />
+        <span class="bracket bracket-br" aria-hidden="true" />
       </div>
 
       <!-- ── Game over overlay ──────────────────────────────────────────── -->
       <div
         v-if="isGameOver"
-        class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-        style="z-index:50"
+        class="absolute inset-0 flex items-center justify-center backdrop-blur-sm"
+        style="z-index:50; background: color-mix(in srgb, var(--ink) 45%, transparent);"
         @click.stop
       >
-        <div class="bg-surface border border-border rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-6 w-[440px] max-w-[90vw] text-center">
+        <div class="game-over-card relative bg-surface rounded-2xl p-8 flex flex-col items-center gap-6 w-[440px] max-w-[90vw] text-center">
+          <span class="bracket bracket-tl" aria-hidden="true" />
+          <span class="bracket bracket-tr" aria-hidden="true" />
+          <span class="bracket bracket-bl" aria-hidden="true" />
+          <span class="bracket bracket-br" aria-hidden="true" />
 
           <!-- Last revealed card -->
           <div v-if="lastMergedCard" class="w-full flex flex-col items-center gap-1">
-            <div class="text-[10px] font-bold uppercase tracking-widest text-ink-faint">
+            <div class="text-[10px] font-bold uppercase tracking-widest text-ink-dim">
               {{ t('board.gameOver.lastRevealedCard') }}
             </div>
             <div
-              class="relative overflow-hidden rounded-lg shadow-md"
+              class="role-card relative overflow-hidden rounded-lg"
               style="width: clamp(112px, 18vmin, 160px); aspect-ratio: 3 / 4;"
             >
               <img
@@ -225,22 +225,28 @@ const myRole = computed(() => roles.value[peerId.value])
                 :alt="lastMergedCard.type"
                 class="absolute inset-0 w-full h-full object-cover"
               />
+              <span class="bracket bracket-tl" aria-hidden="true" />
+              <span class="bracket bracket-tr" aria-hidden="true" />
+              <span class="bracket bracket-bl" aria-hidden="true" />
+              <span class="bracket bracket-br" aria-hidden="true" />
             </div>
           </div>
 
           <!-- Winner declaration -->
           <div
-            class="w-full rounded-xl py-4 px-6"
-            :class="gameState === 'goodDevsWin'
-              ? 'bg-green-50 border border-green-200'
-              : 'bg-red-50 border border-red-200'"
+            class="winner-banner relative w-full rounded-xl py-4 px-6"
+            :class="gameState === 'goodDevsWin' ? 'winner-good' : 'winner-bad'"
           >
+            <span class="bracket bracket-tl" aria-hidden="true" />
+            <span class="bracket bracket-tr" aria-hidden="true" />
+            <span class="bracket bracket-bl" aria-hidden="true" />
+            <span class="bracket bracket-br" aria-hidden="true" />
             <div class="text-4xl mb-2">
               {{ gameState === 'goodDevsWin' ? '🎉' : gameState === 'deadlineMissed' ? '⏰' : '🐛' }}
             </div>
             <div
               class="text-xs font-bold uppercase tracking-widest mb-1"
-              :class="gameState === 'goodDevsWin' ? 'text-green-600' : 'text-red-500'"
+              :class="gameState === 'goodDevsWin' ? 'text-emerald-700' : 'text-rose-700'"
             >
               {{ gameState === 'goodDevsWin' ? t('board.gameOver.winnerGoodDevs') : t('board.gameOver.winnerBadDevs') }}
             </div>
@@ -249,7 +255,7 @@ const myRole = computed(() => roles.value[peerId.value])
                : gameState === 'deadlineMissed' ? t('board.gameOver.headlineDeadlineMissed')
                : t('board.gameOver.headlineProductionDown') }}
             </h2>
-            <p class="text-xs text-ink-faint mt-1 mb-0">
+            <p class="text-xs text-ink-dim mt-1 mb-0">
               {{ gameState === 'goodDevsWin'    ? t('board.gameOver.descAllFeaturesShipped')
                : gameState === 'deadlineMissed' ? t('board.gameOver.descDeadlineMissed')
                : t('board.gameOver.descProductionDown') }}
@@ -258,24 +264,22 @@ const myRole = computed(() => roles.value[peerId.value])
 
           <!-- Player role reveal -->
           <div class="w-full">
-            <div class="text-[10px] font-bold uppercase tracking-widest text-ink-faint mb-3">
+            <div class="text-[10px] font-bold uppercase tracking-widest text-ink-dim mb-3">
               {{ t('board.gameOver.roleReveal') }}
             </div>
             <div class="flex flex-col gap-2">
               <div
                 v-for="player in players"
                 :key="player.id"
-                class="flex items-center justify-between px-3 py-2 rounded-lg border"
-                :class="roles[player.id] === 'goodDev'
-                  ? 'bg-green-50 border-green-200'
-                  : 'bg-red-50 border-red-200'"
+                class="role-row flex items-center justify-between px-3 py-2 rounded-lg"
+                :class="roles[player.id] === 'goodDev' ? 'role-good' : 'role-bad'"
               >
                 <div class="flex items-center gap-2">
                   <div
                     class="w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center"
                     :class="roles[player.id] === 'goodDev'
-                      ? 'bg-green-200 text-green-800'
-                      : 'bg-red-200 text-red-800'"
+                      ? 'bg-emerald-700/15 text-emerald-800'
+                      : 'bg-rose-700/15 text-rose-800'"
                   >
                     {{ player.name.charAt(0).toUpperCase() }}
                   </div>
@@ -287,7 +291,7 @@ const myRole = computed(() => roles.value[peerId.value])
                 </div>
                 <span
                   class="text-[10px] font-bold uppercase tracking-wider"
-                  :class="roles[player.id] === 'goodDev' ? 'text-green-700' : 'text-red-600'"
+                  :class="roles[player.id] === 'goodDev' ? 'text-emerald-800' : 'text-rose-800'"
                 >
                   {{ roles[player.id] === 'goodDev' ? t('board.roleGoodDev') : t('board.roleBadDev') }}
                 </span>
@@ -344,11 +348,11 @@ const myRole = computed(() => roles.value[peerId.value])
         <line
           v-for="player in orderedPlayers"
           :key="`conn-${player.id}`"
+          class="topology-line"
           :x1="CX * 100"
           :y1="CY * 100"
           :x2="visualPos(player).x * 100"
           :y2="visualPos(player).y * 100"
-          stroke="rgba(148,163,184,0.35)"
           stroke-width="0.28"
           stroke-dasharray="1.5 1.5"
         />
@@ -400,7 +404,86 @@ const myRole = computed(() => roles.value[peerId.value])
 }
 
 .topology-bg {
-  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.22) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--ink) 18%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
+
+.topology-line {
+  stroke: color-mix(in srgb, var(--ink) 32%, transparent);
+}
+
+/* Role card paper frame — brackets always navy because the card artwork is always light */
+.role-card {
+  border: 1px solid rgba(28, 39, 71, 0.45);
+  box-shadow:
+    0 6px 18px color-mix(in srgb, var(--ink) 18%, transparent),
+    0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent);
+}
+.role-card .bracket {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: rgba(28, 39, 71, 0.85);
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+.role-card .bracket-tl { top: 6px;    left: 6px;    border-top-width: 2px;    border-left-width: 2px;    border-top-left-radius: 4px; }
+.role-card .bracket-tr { top: 6px;    right: 6px;   border-top-width: 2px;    border-right-width: 2px;   border-top-right-radius: 4px; }
+.role-card .bracket-bl { bottom: 6px; left: 6px;    border-bottom-width: 2px; border-left-width: 2px;    border-bottom-left-radius: 4px; }
+.role-card .bracket-br { bottom: 6px; right: 6px;   border-bottom-width: 2px; border-right-width: 2px;   border-bottom-right-radius: 4px; }
+
+/* Game-over modal — paper card */
+.game-over-card {
+  border: 1px solid color-mix(in srgb, var(--ink) 45%, transparent);
+  box-shadow:
+    0 18px 48px color-mix(in srgb, var(--ink) 35%, transparent),
+    0 4px 8px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+.game-over-card > .bracket {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: color-mix(in srgb, var(--ink) 75%, transparent);
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+.game-over-card > .bracket-tl { top: 10px;    left: 10px;    border-top-width: 2px;    border-left-width: 2px;    border-top-left-radius: 4px; }
+.game-over-card > .bracket-tr { top: 10px;    right: 10px;   border-top-width: 2px;    border-right-width: 2px;   border-top-right-radius: 4px; }
+.game-over-card > .bracket-bl { bottom: 10px; left: 10px;    border-bottom-width: 2px; border-left-width: 2px;    border-bottom-left-radius: 4px; }
+.game-over-card > .bracket-br { bottom: 10px; right: 10px;   border-bottom-width: 2px; border-right-width: 2px;   border-bottom-right-radius: 4px; }
+
+/* Winner banner — tinted paper */
+.winner-banner {
+  border: 1px solid currentColor;
+}
+.winner-banner.winner-good {
+  background: color-mix(in srgb, #6ba287 14%, var(--surface-bg));
+  color: color-mix(in srgb, #2f6b4f 60%, var(--ink));
+}
+.winner-banner.winner-bad {
+  background: color-mix(in srgb, #c4736b 14%, var(--surface-bg));
+  color: color-mix(in srgb, #8a3a36 60%, var(--ink));
+}
+.winner-banner > .bracket {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: currentColor;
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+.winner-banner > .bracket-tl { top: 5px;    left: 5px;    border-top-width: 1.5px;    border-left-width: 1.5px; }
+.winner-banner > .bracket-tr { top: 5px;    right: 5px;   border-top-width: 1.5px;    border-right-width: 1.5px; }
+.winner-banner > .bracket-bl { bottom: 5px; left: 5px;    border-bottom-width: 1.5px; border-left-width: 1.5px; }
+.winner-banner > .bracket-br { bottom: 5px; right: 5px;   border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+/* Role reveal rows — tinted paper */
+.role-row {
+  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+}
+.role-row.role-good { background: color-mix(in srgb, #6ba287 12%, var(--surface-bg)); }
+.role-row.role-bad  { background: color-mix(in srgb, #c4736b 12%, var(--surface-bg)); }
 </style>

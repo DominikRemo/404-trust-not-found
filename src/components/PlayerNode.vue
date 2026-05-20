@@ -61,7 +61,7 @@ function onOpponentCardClick(cardIndex) {
   <div
     class="absolute w-11 h-11 rounded-full font-bold text-base flex items-center justify-center shadow-sm bg-chip-bg text-chip-text transition-all duration-200"
     :class="player.isLocal
-      ? 'ring-2 ring-blue-600 ring-offset-2 ring-offset-[var(--page-bg)]'
+      ? 'ring-2 ring-ink ring-offset-2 ring-offset-[var(--page-bg)]'
       : isActiveReviewer
         ? 'ring-2 ring-amber-500 ring-offset-2 ring-offset-[var(--page-bg)] shadow-[0_0_12px_rgba(245,158,11,0.5)]'
         : 'ring-1 ring-border'"
@@ -95,7 +95,9 @@ function onOpponentCardClick(cardIndex) {
 /* ── Opponent cards ───────────────────────────────────────────────────────── */
 .opponent-card {
   width: clamp(40px, 5vmin, 64px);
-  aspect-ratio: 3 / 4;
+  height: calc(clamp(40px, 5vmin, 64px) * 4 / 3);
+  flex-shrink: 0;
+  align-self: flex-start;
   transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
 

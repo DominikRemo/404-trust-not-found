@@ -9,28 +9,28 @@
   --font-sans: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --font-mono: ui-monospace, 'Cascadia Code', Consolas, monospace;
 
-  /* Backgrounds */
-  --page-bg:      #f8fafc; /* slate-50  — page canvas */
-  --surface-bg:   #ffffff; /* white     — cards / panels */
-  --raised-bg:    #f8fafc; /* slate-50  — items inside cards */
+  /* Backgrounds — warm paper tones to match the illustrated card art */
+  --page-bg:      #f1ede1; /* warm cream — page canvas (paper) */
+  --surface-bg:   #faf7ee; /* lighter cream — cards / panels */
+  --raised-bg:    #ece7d6; /* slightly deeper cream — items inside cards */
 
   /* Borders */
-  --border:       #e2e8f0; /* slate-200 */
-  --border-sub:   #f1f5f9; /* slate-100 */
+  --border:       #d9d2bd; /* warm taupe */
+  --border-sub:   #e7e1cf; /* lighter taupe */
 
-  /* Text */
-  --ink:          #0f172a; /* slate-900 — primary */
-  --ink-sub:      #1e293b; /* slate-800 — secondary */
-  --ink-dim:      #64748b; /* slate-500 — muted body */
-  --ink-faint:    #94a3b8; /* slate-400 — labels / captions */
+  /* Text — navy ink like the card watermark */
+  --ink:          #1c2747; /* deep navy ink — primary */
+  --ink-sub:      #2a3656; /* navy ink — secondary */
+  --ink-dim:      #5b6580; /* muted navy — body */
+  --ink-faint:    #8b91a3; /* faded ink — labels / captions */
 
   /* Neutral badge (step numbers, etc.) */
   --muted-bg:     #e2e8f0; /* slate-200 */
   --muted-text:   #64748b; /* slate-500 */
 
-  /* Blue accent (player avatar, "you" badge, count pill) */
-  --chip-bg:      #eff6ff; /* blue-50 */
-  --chip-text:    #1d4ed8; /* blue-700 */
+  /* Warm accent (player avatar, "you" badge, count pill) — kraft on navy ink */
+  --chip-bg:      #e6dcc1; /* warm taupe / kraft tint */
+  --chip-text:    #1c2747; /* navy ink */
 
   /* Error / danger */
   --danger-surface: #fef2f2; /* red-50 */

@@ -79,7 +79,7 @@ watch(gameState, (newVal, oldVal) => {
     <div v-if="gameState === 'viewing'" class="flex flex-col items-center gap-2 mt-1">
       <button
         v-if="!hasMarkedReady"
-        class="px-5 py-2 rounded-lg bg-blue-700 text-white text-xs font-bold uppercase tracking-widest shadow-lg hover:bg-blue-600 active:bg-blue-800 transition-colors cursor-pointer"
+        class="px-5 py-2 rounded-lg bg-ink text-page text-xs font-bold uppercase tracking-widest shadow-md hover:bg-ink-sub active:bg-ink transition-colors cursor-pointer"
         @click.stop="onPutDownCards"
       >
         {{ t('board.putDownCards') }}
@@ -95,8 +95,8 @@ watch(gameState, (newVal, oldVal) => {
     <!-- Local player avatar -->
     <div v-if="localPlayer" class="flex items-center gap-1.5 mt-1">
       <div
-        class="w-9 h-9 rounded-full bg-chip-bg text-chip-text text-sm font-bold flex items-center justify-center ring-2 ring-blue-600 ring-offset-2 ring-offset-[var(--page-bg)]"
-        :class="isReviewing ? 'ring-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.5)]' : 'ring-blue-600'"
+        class="w-9 h-9 rounded-full bg-chip-bg text-chip-text text-sm font-bold flex items-center justify-center ring-2 ring-ink ring-offset-2 ring-offset-[var(--page-bg)]"
+        :class="isReviewing ? 'ring-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.5)]' : 'ring-ink'"
       >
         {{ localPlayer.name.charAt(0).toUpperCase() }}
       </div>

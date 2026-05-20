@@ -64,7 +64,7 @@ function saveEdit() {
     <!-- Header bar -->
     <header class="flex items-center justify-between px-6 py-3 bg-surface border-b border-border shadow-sm">
       <div class="flex items-center gap-3">
-        <span class="bg-blue-700 text-white text-xs font-bold tracking-widest px-2.5 py-1 rounded">404</span>
+        <span class="bg-ink text-page text-xs font-bold tracking-widest px-2.5 py-1 rounded">404</span>
         <h1 class="text-base font-semibold text-ink m-0">Trust Not Found</h1>
       </div>
       <div class="flex items-center gap-2">
@@ -114,7 +114,7 @@ function saveEdit() {
         <div class="flex items-center gap-3 mb-1">
           <span
             class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-            :class="hasName ? 'bg-blue-700 text-white' : 'bg-muted-bg text-muted-text'"
+            :class="hasName ? 'bg-ink text-page' : 'bg-muted-bg text-muted-text'"
           >
             {{ hasName ? '✓' : '1' }}
           </span>
