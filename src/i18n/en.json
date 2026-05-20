@@ -77,7 +77,6 @@
   "infoCard": {
     "title": "Game Status",
     "badDevs": "Bad Devs",
-    "possible": "possible",
     "featuresMerged": "Features merged",
     "bugsMerged": "Bugs merged"
   },
