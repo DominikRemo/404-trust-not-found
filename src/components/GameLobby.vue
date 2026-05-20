@@ -64,7 +64,7 @@ function saveEdit() {
     <!-- Header bar -->
     <header class="flex items-center justify-between px-6 py-3 bg-surface border-b border-border shadow-sm">
       <div class="flex items-center gap-3">
-        <span class="bg-blue-700 text-white text-xs font-bold tracking-widest px-2.5 py-1 rounded">404</span>
+        <span class="bg-ink text-page text-xs font-bold tracking-widest px-2.5 py-1 rounded">404</span>
         <h1 class="text-base font-semibold text-ink m-0">Trust Not Found</h1>
       </div>
       <div class="flex items-center gap-2">
@@ -114,7 +114,7 @@ function saveEdit() {
         <div class="flex items-center gap-3 mb-1">
           <span
             class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-            :class="hasName ? 'bg-blue-700 text-white' : 'bg-muted-bg text-muted-text'"
+            :class="hasName ? 'bg-ink text-page' : 'bg-muted-bg text-muted-text'"
           >
             {{ hasName ? '✓' : '1' }}
           </span>
@@ -199,15 +199,14 @@ function saveEdit() {
         <!-- Room code (host only) -->
         <div v-if="isHost" class="flex flex-col gap-2">
           <span class="text-xs font-semibold uppercase tracking-wider text-ink-faint">{{ t('lobby.roomCode') }}</span>
-          <div class="flex items-center gap-3">
-            <code class="flex-1 font-mono text-2xl font-semibold tracking-[0.25em] bg-raised border border-border rounded-lg px-4 py-2.5 text-ink">
+          <div class="flex items-stretch gap-3">
+            <code class="flex-1 flex items-center font-mono text-2xl font-semibold tracking-[0.25em] bg-raised border border-border rounded-lg px-4 text-ink">
               {{ peerId }}
             </code>
             <Button
               :label="copied ? t('lobby.copied') : t('lobby.copy')"
               :icon="copied ? 'pi pi-check' : 'pi pi-copy'"
               severity="secondary"
-              size="small"
               @click="copyCode"
             />
           </div>

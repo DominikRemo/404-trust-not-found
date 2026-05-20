@@ -15,6 +15,7 @@ const props = defineProps({
 const { hands, gameState } = useGameEngine()
 const { dispatchAction } = useNetwork()
 const { t } = useI18n()
+const baseUrl = import.meta.env.BASE_URL
 
 // ── Cards for this player node ────────────────────────────────────────────────
 const cardList = computed(() => hands.value[props.player.id] ?? [])
@@ -47,7 +48,11 @@ function onOpponentCardClick(cardIndex) {
         :style="{ '--card-index': cardIndex }"
         @click.stop="onOpponentCardClick(cardIndex)"
       >
-        <span class="card-watermark absolute inset-0 flex items-center justify-center font-black font-mono select-none pointer-events-none">404</span>
+        <img
+          :src="`${baseUrl}cards/back.png`"
+          alt="card back"
+          class="absolute inset-0 w-full h-full object-cover rounded-lg pointer-events-none"
+        />
       </div>
     </TransitionGroup>
   </div>
@@ -56,7 +61,7 @@ function onOpponentCardClick(cardIndex) {
   <div
     class="absolute w-11 h-11 rounded-full font-bold text-base flex items-center justify-center shadow-sm bg-chip-bg text-chip-text transition-all duration-200"
     :class="player.isLocal
-      ? 'ring-2 ring-blue-600 ring-offset-2 ring-offset-[var(--page-bg)]'
+      ? 'ring-2 ring-ink ring-offset-2 ring-offset-[var(--page-bg)]'
       : isActiveReviewer
         ? 'ring-2 ring-amber-500 ring-offset-2 ring-offset-[var(--page-bg)] shadow-[0_0_12px_rgba(245,158,11,0.5)]'
         : 'ring-1 ring-border'"
@@ -89,23 +94,15 @@ function onOpponentCardClick(cardIndex) {
 <style scoped>
 /* ── Opponent cards ───────────────────────────────────────────────────────── */
 .opponent-card {
-  width: 38px;
-  height: 54px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border: 1px solid rgba(148, 163, 184, 0.45);
+  width: clamp(40px, 5vmin, 64px);
+  height: calc(clamp(40px, 5vmin, 64px) * 4 / 3);
+  flex-shrink: 0;
+  align-self: flex-start;
   transition: transform 0.15s ease, box-shadow 0.2s ease;
-  overflow: visible;
 }
 
 .opponent-card:hover {
   transform: translateY(-3px);
-}
-
-/* ── Card watermark ───────────────────────────────────────────────────────── */
-.card-watermark {
-  font-size: 10px;
-  color: rgba(148, 163, 184, 0.55);
-  user-select: none;
 }
 
 /* ── Deal animation (cards flying in at sprint start) ────────────────────── */
